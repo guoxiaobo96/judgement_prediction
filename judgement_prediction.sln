@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "judgement_prediction", "judgement_prediction\judgement_prediction.pyproj", "{0DE8CB0D-A1EA-466A-AC9A-75DD56C7EA3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0DE8CB0D-A1EA-466A-AC9A-75DD56C7EA3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DE8CB0D-A1EA-466A-AC9A-75DD56C7EA3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C39EE00B-38E4-4CB7-9C2F-79D21EAF5249}
+	EndGlobalSection
+EndGlobal
