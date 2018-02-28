@@ -69,16 +69,16 @@ def xls2txt(foldname):
 def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
-        if content.find("缓刑")!=-1:
-            return "0\n"
-        elif content.find("无期徒刑")!=-1:
-            return "3\n"
-        elif content.find("十")!=-1:
-            return "2\n"
-        else:
-            return "1\n"
+#       if content.find("缓刑")!=-1:
+           return "0\n"
+#        elif content.find("无期徒刑")!=-1:
+#            return "3\n"
+#        elif content.find("十")!=-1:
+#            return "2\n"
+#        else:
+#            return "1\n"
     else:
-        return "4\n"
+        return "1\n"
 
 def load_data(fold_name):
     """get texts and labels"""
@@ -126,8 +126,6 @@ def svm(train_data, train_labels, test_data, test_labels):
     print ('precision_score: '+str(float(num) / len(preds)))
 
 def main():
-    train_texts, train_labels, test_texts, test_labels = load_data("D:/案件数据/故意杀人案")
-    train_data, train_labels, test_data, test_labels = doc2vec(train_texts, train_labels, test_texts, test_labels)
-    svm(train_data, train_labels, test_data, test_labels)
+    xls2txt("D:/案件数据/故意杀人案")
 
 main()
