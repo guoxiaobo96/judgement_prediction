@@ -69,14 +69,14 @@ def xls2txt(foldname):
 def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
-#       if content.find("缓刑")!=-1:
-           return "0\n"
-#        elif content.find("无期徒刑")!=-1:
-#            return "3\n"
-#        elif content.find("十")!=-1:
-#            return "2\n"
-#        else:
-#            return "1\n"
+       if content.find("缓刑")!=-1:
+            return "0\n"
+        elif content.find("无期徒刑")!=-1:
+            return "3\n"
+        elif content.find("十")!=-1:
+            return "2\n"
+        else:
+            return "1\n"
     else:
         return "1\n"
 
