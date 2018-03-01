@@ -5,14 +5,15 @@ import os
 import sys
 import random
 
-def xls2txt(foldname='data/temp'):
+def xls2txt(foldname='D:/案件数据/故意杀人案'):
     """this part is used to change from xls to txt"""
     source_foldname = foldname
     source_file_list = os.listdir(source_foldname)
-    train_content_filename = source_foldname+"/train_content.txt"
-    train_label_filename = source_foldname+"/train_label.txt"
-    test_content_filename = source_foldname+"/test_content.txt"
-    test_label_filename = source_foldname+"/test_label.txt"
+    target_filename= 'D:/judgement_prediction/judgement_prediction/temp'
+    train_content_filename = target_filename+"/train_content.txt"
+    train_label_filename = target_filename+"/train_label.txt"
+    test_content_filename = target_filename+"/test_content.txt"
+    test_label_filename = target_filename+"/test_label.txt"
     train_content = str()
     train_label = str()
     test_content = str()
