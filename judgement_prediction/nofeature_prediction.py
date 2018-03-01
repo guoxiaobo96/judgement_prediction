@@ -5,12 +5,9 @@ import os
 import sys
 import random
 
-def xls2txt(foldname):
+def xls2txt(foldname='data/temp'):
     """this part is used to change from xls to txt"""
-    if foldname!='':
-        source_foldname = foldname
-    else:
-        source_foldname = "D:/案件数据/故意杀人案"
+    source_foldname = foldname
     source_file_list = os.listdir(source_foldname)
     train_content_filename = source_foldname+"/train_content.txt"
     train_label_filename = source_foldname+"/train_label.txt"
@@ -69,14 +66,14 @@ def xls2txt(foldname):
 def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
-        if content.find("缓刑")!=-1:
-            return "0\n"
-        elif content.find("无期徒刑")!=-1:
-            return "3\n"
-        elif content.find("十")!=-1:
-            return "2\n"
-        else:
-            return "1\n"
+#        if content.find("缓刑")!=-1:
+        return "0\n"
+#        elif content.find("无期徒刑")!=-1:
+#            return "3\n"
+#        elif content.find("十")!=-1:
+#            return "2\n"
+#        else:
+#            return "1\n"
     else:
         return "1\n"
 
@@ -126,6 +123,6 @@ def svm(train_data, train_labels, test_data, test_labels):
     print ('precision_score: '+str(float(num) / len(preds)))
 
 def main():
-    xls2txt("D:/案件数据/故意杀人案")
+    xls2txt()
 
 main()

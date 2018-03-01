@@ -10,10 +10,10 @@ TEST_SPLIT = 0.2
 
 
 print("(1) load texts...")
-train_texts = open('D:/案件数据/故意杀人案/train_content.txt', encoding='utf-8').read().split('\n')
-train_labels = open('D:/案件数据/故意杀人案/train_label.txt', encoding='utf-8').read().split('\n')
-test_texts = open('D:/案件数据/故意杀人案/test_content.txt', encoding='utf-8').read().split('\n')
-test_labels = open('D:/案件数据/故意杀人案/test_label.txt', encoding='utf-8').read().split('\n')
+train_texts = open('data/train_content.txt', encoding='utf-8').read().split('\n')
+train_labels = open('data/train_label.txt', encoding='utf-8').read().split('\n')
+test_texts = open('data/test_content.txt', encoding='utf-8').read().split('\n')
+test_labels = open('data/test_label.txt', encoding='utf-8').read().split('\n')
 all_texts = train_texts + test_texts
 all_labels = train_labels + test_labels
 
