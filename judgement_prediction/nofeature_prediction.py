@@ -5,7 +5,7 @@ import os
 import sys
 import random
 
-def xls2txt(foldname='data/temp'):
+def xls2txt(foldname='data'):
     """this part is used to change from xls to txt"""
     source_foldname = foldname
     source_file_list = os.listdir(source_foldname)
