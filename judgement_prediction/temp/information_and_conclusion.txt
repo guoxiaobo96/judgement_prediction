@@ -1,0 +1,3 @@
+case number:18680
+death number:2978
+life number:15702
