@@ -5,17 +5,17 @@ import keras
 
 VECTOR_DIR = 'vectors.bin'
 
-MAX_SEQUENCE_LENGTH = 100
+MAX_SEQUENCE_LENGTH = 200
 EMBEDDING_DIM = 200
-VALIDATION_SPLIT = 0.16
+VALIDATION_SPLIT = 0.25
 TEST_SPLIT = 0.2
 
 
 print ('(1) load texts...')
-train_texts = open('D:/案件数据/故意杀人案/train_content.txt', encoding='utf-8').read().split('\n')
-train_labels = open('D:/案件数据/故意杀人案/train_label.txt', encoding='utf-8').read().split('\n')
-test_texts = open('D:/案件数据/故意杀人案/test_content.txt', encoding='utf-8').read().split('\n')
-test_labels = open('D:/案件数据/故意杀人案/test_label.txt', encoding='utf-8').read().split('\n')
+train_texts = open('D:/judgement_prediction/judgement_prediction/temp/train_content.txt', encoding='utf-8').read().split('\n')
+train_labels = open('D:/judgement_prediction/judgement_prediction/temp/train_label.txt', encoding='utf-8').read().split('\n')
+test_texts = open('D:/judgement_prediction/judgement_prediction/temp/test_content.txt', encoding='utf-8').read().split('\n')
+test_labels = open('D:/judgement_prediction/judgement_prediction/temp/test_label.txt', encoding='utf-8').read().split('\n')
 all_texts = train_texts + test_texts
 all_labels = train_labels + test_labels
 
@@ -69,7 +69,7 @@ model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
               metrics=['acc'])
 print (model.metrics_names)
-model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=2, batch_size=128)
+model.fit(x_train, y_train, validation_data=(x_val, y_val), epochs=2, batch_size=64)
 model.save('lstm.h5')
 
 print ('(6) testing model...')
