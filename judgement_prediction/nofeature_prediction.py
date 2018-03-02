@@ -7,6 +7,7 @@ import random
 
 def xls2txt(foldname='D:/案件数据/故意杀人案'):
     """this part is used to change from xls to txt"""
+    classification_number_count=[0,0,0,0,0]
     source_foldname = foldname
     source_file_list = os.listdir(source_foldname)
     target_filename= 'D:/judgement_prediction/judgement_prediction/temp'
@@ -19,9 +20,6 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
     test_content = str()
     test_label = str()
     case_number = 0
-    death_immediate = 0
-    death_delay = 0
-    life_number = 0
 
     for source_filename in source_file_list:
         source_filename = source_foldname+"/"+source_filename
@@ -37,12 +35,14 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
             content = content.replace('\n', '')+'\n'
             temp_label = sheet.cell(_, 14).value+''
             distribute_number = random.random()
+            label, classification_number = getLabel(temp_label)
+            classification_number_count[classification_number]+=1
             if distribute_number<=0.8:
                 train_content+=content
-                train_label+=getLabel(temp_label)
+                train_label+=label
             else:
                 test_content+=content
-                test_label+=getLabel(temp_label)
+                test_label+=label
     delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
                    '（', '）', '[', ']', '【', '】', '*', '-', '；']
     for i in range(len(delete_list)):
@@ -59,16 +59,15 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
     with open(file=test_label_filename, mode="a",encoding='utf-8') as target_file:
         target_file.write(test_label)
     print("case number:%d"%case_number)
-    print("death_delay number:%d"%death_delay)
-    print("death immediate number:%d"%death_immediate)
-    print("life number%d:"%life_number)
+    print("death number:%d"%classification_number_count[1])
+    print("life number:%d"%classification_number_count[0])
     return "xls2txt finish"
 
 def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
 #        if content.find("缓刑")!=-1:
-        return "0\n"
+        return "0\n", 0
 #        elif content.find("无期徒刑")!=-1:
 #            return "3\n"
 #        elif content.find("十")!=-1:
@@ -76,7 +75,7 @@ def getLabel(content):
 #        else:
 #            return "1\n"
     else:
-        return "1\n"
+        return "1\n", 1
 
 def load_data(fold_name):
     """get texts and labels"""
