@@ -58,7 +58,7 @@ from keras.models import Sequential
 
 model = Sequential()
 model.add(Embedding(len(word_index) + 1, EMBEDDING_DIM, input_length=MAX_SEQUENCE_LENGTH))
-model.add(Dropout(0.2))
+model.add(Dropout(0.5))
 model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
 model.add(MaxPooling1D(5))
 model.add(Flatten())
