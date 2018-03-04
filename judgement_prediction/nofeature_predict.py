@@ -89,11 +89,11 @@ def xls2csv(foldname='D:/案件数据/故意杀人案'):
             temp_label = sheet.cell(_, 14).value+''
             label, classification_number = getLabel(temp_label)
             classification_number_count[classification_number]+=1
+            delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
+                   '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
+            for i in range(len(delete_list)):
+                content = content.replace(delete_list[i], '')
             data+=content+","+label
-    delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
-                   '（', '）', '[', ']', '【', '】', '*', '-', '；']
-    for i in range(len(delete_list)):
-        data = data.replace(delete_list[i], '')
     data = " ".join(jieba.cut(data))
     with open(file=target_filename, mode="a",encoding='utf-8') as target_file:
         target_file.write(data)
@@ -125,7 +125,7 @@ def main():
     while value != 'quit':
         if value == 'txt prepare':
             xls2txt()
-        elif value=='csv prepar':
+        elif value=='csv prepare':
             xls2csv()
         value = input("please input action:")
 
