@@ -85,7 +85,7 @@ def main():
     value = str('')
     value = input("please input action:")
     while value != 'quit':
-        if value == 'prepare：':
+        if value == 'prepare':
             xls2txt()
 
 main()
