@@ -5,11 +5,7 @@ import os
 import sys
 import random
 
-<<<<<<< HEAD
-def xls2txt(foldname='data'):
-=======
 def xls2txt(foldname='D:/案件数据/故意杀人案'):
->>>>>>> e5751da54f85a95e49f4372f72d04b9725ffc035
     """this part is used to change from xls to txt"""
     classification_number_count=[0,0,0,0,0]
     source_foldname = foldname
