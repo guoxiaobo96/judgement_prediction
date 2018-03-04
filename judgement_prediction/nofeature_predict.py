@@ -68,7 +68,7 @@ def xls2csv(foldname='D:/案件数据/故意杀人案'):
     classification_number_count=[0,0,0,0,0]
     source_foldname = foldname
     source_file_list = os.listdir(source_foldname)
-    target_filename= 'D:/judgement_prediction/judgement_prediction/temp/data.csv'
+    target_filename= 'D:/judgement_prediction/judgement_prediction/temp/data.txt'
     
     data=str()
     case_number = 0
