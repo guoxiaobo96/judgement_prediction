@@ -28,10 +28,11 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
         content = str()
         for _ in range(1, sheet.nrows):
             case_number +=1
-            content = sheet.cell(_, 13).value+" "+sheet.cell(_, 7).value+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[1:4]
+            content = sheet.cell(_, 13).value
             position = content.find("本院认为")
             if position>0:
                 content = content[position:]
+            content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
             content = content.replace('\n', '')+'\n'
             temp_label = sheet.cell(_, 14).value+''
             distribute_number = random.random()
