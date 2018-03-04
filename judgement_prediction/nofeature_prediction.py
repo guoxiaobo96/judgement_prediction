@@ -83,7 +83,7 @@ def main():
     prepare: 对于文本进行适当处理
     cmm: 采用textcnn对于处理好的文本进行分类"""
     value = str('')
-    value = input("请输入操作：")
+    value = input("please input action:")
     while value != 'quit':
         if value == 'prepare：':
             xls2txt()
