@@ -93,7 +93,7 @@ def xls2csv(foldname='D:/案件数据/故意杀人案'):
                    '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
             for i in range(len(delete_list)):
                 content = content.replace(delete_list[i], '')
-            data+=content+","+label
+            data = data+content+","+label[0:1]+'\n'
     data = " ".join(jieba.cut(data))
     with open(file=target_filename, mode="a",encoding='utf-8') as target_file:
         target_file.write(data)
