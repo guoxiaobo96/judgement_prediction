@@ -1,9 +1,8 @@
-import tensorflow as tf
-import xlrd
-import jieba
 import os
 import sys
 import random
+import xlrd
+import jieba
 
 def xls2txt(foldname='D:/案件数据/故意杀人案'):
     """this part is used to change from xls to txt"""
@@ -64,6 +63,45 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
     print("life number:%d"%classification_number_count[0])
     return "xls2txt finish"
 
+def xls2csv(foldname='D:/案件数据/故意杀人案'):
+    """this part is used to change the date from xls version to csv version"""
+    classification_number_count=[0,0,0,0,0]
+    source_foldname = foldname
+    source_file_list = os.listdir(source_foldname)
+    target_filename= 'D:/judgement_prediction/judgement_prediction/temp/data.csv'
+    
+    data=str()
+    case_number = 0
+
+    for source_filename in source_file_list:
+        source_filename = source_foldname+"/"+source_filename
+        source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
+        sheet = source_file.sheet_by_index(0)
+        content = str()
+        for _ in range(1, sheet.nrows):
+            case_number +=1
+            content = sheet.cell(_, 13).value
+            position = content.find("本院认为")
+            if position>0:
+                content = content[position:]
+            content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
+            content = content.replace('\n', '')
+            temp_label = sheet.cell(_, 14).value+''
+            label, classification_number = getLabel(temp_label)
+            classification_number_count[classification_number]+=1
+            data+=content+","+label
+    delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
+                   '（', '）', '[', ']', '【', '】', '*', '-', '；']
+    for i in range(len(delete_list)):
+        data = data.replace(delete_list[i], '')
+    data = " ".join(jieba.cut(data))
+    with open(file=target_filename, mode="a",encoding='utf-8') as target_file:
+        target_file.write(data)
+    print("case number:%d"%case_number)
+    print("death number:%d"%classification_number_count[1])
+    print("life number:%d"%classification_number_count[0])
+    return "xls2csv finish"
+
 def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
@@ -85,8 +123,10 @@ def main():
     value = str('')
     value = input("please input action:")
     while value != 'quit':
-        if value == 'prepare':
+        if value == 'txt prepare':
             xls2txt()
+        elif value=='csv prepar':
+            xls2csv()
         value = input("please input action:")
 
 main()
