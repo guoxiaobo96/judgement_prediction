@@ -79,6 +79,13 @@ def getLabel(content):
         return "1\n", 1
 
 def main():
-    xls2txt()
+    """主程序，根据输入决定操作内容。
+    prepare: 对于文本进行适当处理
+    cmm: 采用textcnn对于处理好的文本进行分类"""
+    value = str('')
+    value = input('请输入操作：')
+    while value != 'quit':
+        if value == 'prepare':
+            xls2txt()
 
 main()
