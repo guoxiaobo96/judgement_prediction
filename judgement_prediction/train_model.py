@@ -3,7 +3,7 @@ def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp
     from keras.preprocessing.text import Tokenizer
     import pandas as pd
 
-    data = pd.read_csv(filename)
+    data = pd.read_csv(filename,encoding='utf-8')
 
     MAX_LEN = 200
     train_data, test_data, train_label, test_label = train_test_split(title, label,
