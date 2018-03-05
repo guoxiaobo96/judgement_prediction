@@ -1,15 +1,16 @@
-def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp/data.csv'):
+def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt'):
     from sklearn.model_selection import train_test_split
     from keras.preprocessing.text import Tokenizer
     import pandas as pd
-
-    data = pd.read_csv(filename,encoding='utf-8')
-
+    columns=['content', 'label']
+    data = pd.read_csv(filename, encoding='utf-8', sep=', ', header='None', names=columns)
+    conent = data['content']
+    label = data['label']
     MAX_LEN = 200
-    train_data, test_data, train_label, test_label = train_test_split(title, label,
+    train_data, test_data, train_label, test_label = train_test_split(content, label,
                                                                       test_size=0.1, random_state=42)
     tokenizer = Tokenizer(filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n',lower=True,split=" ")
-    tokenizer.fit_on_texts(title)
+    tokenizer.fit_on_texts(content)
     vocab = tokenizer.word_index
 
     train_data_ids = tokenizer.texts_to_sequences(train_data)
