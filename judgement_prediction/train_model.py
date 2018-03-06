@@ -1,6 +1,14 @@
-def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt'):
+def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt', mode='one_hot'):
+    """从指定文件中获得待训练数据，数据源文件是txt文件以', '分割
+    PARA:
+    filename：数据源文件
+    mode：返回值的类型，有one_hot与sequence两种
+    RETURN:
+    分割好的训练集、测验集
+    """
     from sklearn.model_selection import train_test_split
     from keras.preprocessing.text import Tokenizer
+    from keras.preprocessing.sequence import pad_sequences
     import pandas as pd
     import numpy as np
     
@@ -18,10 +26,18 @@ def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp
 
     train_data_ids = tokenizer.texts_to_sequences(train_data)
     test_data_ids = tokenizer.texts_to_sequences(test_data)
-
-    train_data = tokenizer.sequences_to_matrix(train_data_ids, mode='binary')
-    test_data = tokenizer.sequences_to_matrix(test_data_ids, mode='binary')
+    if mode=='one_hot':
+        train_data = tokenizer.sequences_to_matrix(train_data_ids, mode='binary')
+        test_data = tokenizer.sequences_to_matrix(test_data_ids, mode='binary')
+    elif mode=='sequence':
+        train_data = pad_sequences(train_data_ids, maxlen=MAX_LEN)
+        test_data = pad_sequences(test_data_ids, maxlen=MAX_LEN)
     return train_data, test_data, train_label, test_label
 
-def textcnn_model(foldname='D:/judgement_prediction/judgement_prediction/temp/data.csv'):
-    return 0
+def main():
+    train_data, test_data, train_label, test_label = get_data_one_hot(mode='sequence')
+    print(train_data)
+
+
+if __name__ == '__main__':
+    main()
