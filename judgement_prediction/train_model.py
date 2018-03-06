@@ -1,4 +1,4 @@
-def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt', mode='one_hot'):
+def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt', mode='one_hot'):
     """从指定文件中获得待训练数据，数据源文件是txt文件以', '分割
     PARA:
     filename：数据源文件
@@ -34,10 +34,12 @@ def get_data_one_hot(filename='D:/judgement_prediction/judgement_prediction/temp
         test_data = pad_sequences(test_data_ids, maxlen=MAX_LEN)
     return train_data, test_data, train_label, test_label
 
-def main():
-    train_data, test_data, train_label, test_label = get_data_one_hot(mode='sequence')
-    print(train_data)
 
+def cnn():
+    print('0')
+
+def main():
+    print('0')
 
 if __name__ == '__main__':
     main()
