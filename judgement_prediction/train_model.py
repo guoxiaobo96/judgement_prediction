@@ -51,7 +51,7 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
 
     print("cnn......")
     model = Sequential()
-    model.add(Embedding(len(vocab)+1, embedding, input_lenth=max_len))
+    model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
     model.add(Dropout(0.5))
     model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
     model.add(MaxPooling1D(5))
