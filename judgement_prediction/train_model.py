@@ -32,29 +32,43 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     elif mode=='sequence':
         train_data = pad_sequences(train_data_ids, maxlen=MAX_LEN)
         test_data = pad_sequences(test_data_ids, maxlen=MAX_LEN)
-    return train_data, test_data, train_label, test_label
+    return train_data, test_data, train_label, test_label, vocab
 
 
 def cnn_model(embedding = 200, max_len = 200):
     """this part is based on cnn"""
-    from keras.models import Model
-    from keras.layers import Dense, Input, Flatten, Dropout
-    from keras.layers import Conv1D, MaxPooling1D, Embedding, GlobalMaxPooling1D
+    from keras.layers import Dense, Flatten, Dropout
+    from keras.layers import Conv1D, MaxPooling1D, Embedding
     from keras.models import Sequential
 
-    train_data, test_data, train_label, test_label, vocab = get_data_one_hot(mode='sequence')
+    train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
+
+    valid_data = train_data[:len(train_data)/2]
+    valid_label = train_data[:len(test_label)/2]
+    train_data = train_data[len(train_data)/2+1:]
+    train_label = train_label[len(train_data)/2+1:]
+
     model = Sequential()
     model.add(Embedding(len(vocab)+1, embedding, max_len))
     model.add(Dropout(0.5))
     model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
     model.add(MaxPooling1D(5))
     model.add(Flatten())
-    model.add(Dense(EMBEDDING_DIM, activation='relu'))
-    model.add(Dense(labels.shape[1], activation='softmax'))
+    model.add(Dense(embedding, activation='relu'))
+    model.add(Dense(train_label.shape[1], activation='softmax'))
     model.summary()
 
+    model.compile(loss='categorical_crossentropy',
+              optimizer='rmsprop',
+              metrics=['acc'])
+
+    model.fit(train_data, train_label,
+              batch_size=64, epochs=2, 
+              validation_data=(valid_data, valid_label))
+    print(model.evaluate(test_data, test_label))
+
 def main():
-    print('0')
+    cnn_model(200, 200)
 
 if __name__ == '__main__':
     main()
