@@ -13,7 +13,7 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     import numpy as np
     print("getting data......")
     columns=['content', 'label']
-    data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns)
+    data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns, engine='python')
     data.reindex(np.random.permutation(data.index))
     content = data['content']
     label = data['label']
