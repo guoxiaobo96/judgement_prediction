@@ -11,7 +11,7 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     from keras.preprocessing.sequence import pad_sequences
     import pandas as pd
     import numpy as np
-    
+    print("getting data……")
     columns=['content', 'label']
     data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns)
     data.reindex(np.random.permutation(data.index))
@@ -32,21 +32,23 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     elif mode=='sequence':
         train_data = pad_sequences(train_data_ids, maxlen=MAX_LEN)
         test_data = pad_sequences(test_data_ids, maxlen=MAX_LEN)
+    print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
 
-def cnn_model(embedding = 200, max_len = 200):
+def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
     """this part is based on cnn"""
+    print("cnn……")
     from keras.layers import Dense, Flatten, Dropout
     from keras.layers import Conv1D, MaxPooling1D, Embedding
     from keras.models import Sequential
 
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
-
-    valid_data = train_data[:len(train_data)/2]
-    valid_label = train_data[:len(test_label)/2]
-    train_data = train_data[len(train_data)/2+1:]
-    train_label = train_label[len(train_data)/2+1:]
+    segmentation = int(len(train_data)*valid_rate)
+    valid_data = train_data[:segmentation]
+    valid_label = train_data[:segmentation]
+    train_data = train_data[segmentation+1:]
+    train_label = train_label[segmentation+1:]
 
     model = Sequential()
     model.add(Embedding(len(vocab)+1, embedding, max_len))
