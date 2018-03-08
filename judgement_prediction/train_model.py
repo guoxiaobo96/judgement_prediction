@@ -35,8 +35,23 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     return train_data, test_data, train_label, test_label
 
 
-def cnn():
-    print('0')
+def cnn_model(embedding = 200, max_len = 200):
+    """this part is based on cnn"""
+    from keras.models import Model
+    from keras.layers import Dense, Input, Flatten, Dropout
+    from keras.layers import Conv1D, MaxPooling1D, Embedding, GlobalMaxPooling1D
+    from keras.models import Sequential
+
+    train_data, test_data, train_label, test_label, vocab = get_data_one_hot(mode='sequence')
+    model = Sequential()
+    model.add(Embedding(len(vocab)+1, embedding, max_len))
+    model.add(Dropout(0.5))
+    model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
+    model.add(MaxPooling1D(5))
+    model.add(Flatten())
+    model.add(Dense(EMBEDDING_DIM, activation='relu'))
+    model.add(Dense(labels.shape[1], activation='softmax'))
+    model.summary()
 
 def main():
     print('0')
