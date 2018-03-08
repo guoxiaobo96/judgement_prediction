@@ -11,7 +11,7 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     from keras.preprocessing.sequence import pad_sequences
     import pandas as pd
     import numpy as np
-    print("getting data……")
+    print("getting data......")
     columns=['content', 'label']
     data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns)
     data.reindex(np.random.permutation(data.index))
@@ -38,7 +38,6 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
 
 def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
     """this part is based on cnn"""
-    print("cnn……")
     from keras.layers import Dense, Flatten, Dropout
     from keras.layers import Conv1D, MaxPooling1D, Embedding
     from keras.models import Sequential
@@ -50,8 +49,9 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
     train_data = train_data[segmentation+1:]
     train_label = train_label[segmentation+1:]
 
+    print("cnn......")
     model = Sequential()
-    model.add(Embedding(len(vocab)+1, embedding, max_len))
+    model.add(Embedding(len(vocab)+1, embedding, input_lenth=max_len))
     model.add(Dropout(0.5))
     model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
     model.add(MaxPooling1D(5))
