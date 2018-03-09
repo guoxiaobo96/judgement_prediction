@@ -142,7 +142,7 @@ def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.
     main_output = Dense(2, activation='softmax')(drop)
     model = Model(inputs = main_input, outputs = main_output)
 
-    model.compile(loss='categorical_crossentropy',
+    model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',
               metrics=['acc'])
 
