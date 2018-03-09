@@ -82,11 +82,32 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
         target_file.write(date)
     return accuracy[1]
 
-def rnn_model((embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3)
+def rnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.1, recurrent_drop=0.1, batch_size =64, epoch=3):
     from keras.models import Sequential
-    from keras.layers import   
+    from keras.layers import Embedding, LSTM, Dense
+
+    print('RNN......')
+    model=Sequential()
+    model.add(Embedding(len(vocab)+1, Embedding, input_length=max_len))
+    model.add(LSTM(256, drop_out=drop_out, recurrent_drop=recurrent_drop))
+    model.add(Dense(2, activation='softmax'))
+
+    model.compile(loss='categorical_crossentropy',
+              optimizer='rmsprop',
+              metrics=['acc'])
+
+    model.fit(train_data, train_label,
+              validation_data=(valid_data, valid_label),
+              batch_size=batch_size, epochs=epoch)
+    accuracy = model.evaluate(test_data, test_label)
+    print(accuracy)
+    date = 'rnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
+            +', recurrent_drop='+recurrent_drop+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
+    with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
+        target_file.write(date)
+    return accuracy[1]
 def main():
-    cnn_model(embedding=200, max_len=200,drop_out=0.2)
+    cnn_model()
 
 if __name__ == '__main__':
     main()
