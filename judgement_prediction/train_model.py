@@ -46,14 +46,14 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
     segmentation = int(len(train_data)*valid_rate)
     valid_data = train_data[:segmentation]
-    valid_label = train_data[:segmentation]
+    valid_label = train_label[:segmentation]
     train_data = train_data[segmentation+1:]
     train_label = train_label[segmentation+1:]
 
     print("cnn......")
     model = Sequential()
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.3))
     model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
     model.add(MaxPooling1D(5))
     model.add(Flatten())
