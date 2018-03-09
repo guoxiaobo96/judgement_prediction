@@ -86,7 +86,7 @@ def rnn_model((embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, b
     from keras.models import Sequential
     from keras.layers import   
 def main():
-    cnn_model(embedding=200, max_len=200,drop_out=0.15)
+    cnn_model(embedding=200, max_len=200,drop_out=0.2)
 
 if __name__ == '__main__':
     main()

@@ -1,1 +1,3 @@
 cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.9571734476651063
+cnn model, embedding = 200, max_len=200, drop_out=0.15, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.949678800728898
+cnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.9539614562304168
