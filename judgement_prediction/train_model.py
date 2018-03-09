@@ -114,7 +114,7 @@ def rnn__lstm_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0
         target_file.write(date)
     return accuracy[1]
 def main():
-    rnn_model()
+    rnn_lstm_model()
 
 if __name__ == '__main__':
     main()
