@@ -37,7 +37,7 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     return train_data, test_data, train_label, test_label, vocab
 
 
-def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3):
+def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3):
     """this part is based on cnn"""
     from keras.layers import Dense, Flatten, Dropout
     from keras.layers import Conv1D, MaxPooling1D, Embedding
@@ -67,13 +67,14 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3):
 
     model.fit(train_data, train_label,
               validation_data=(valid_data, valid_label),
-              batch_size=64, epochs=2)
+              batch_size=batch_size, epochs=epoch)
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
     date = 'cnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
-            ', accuracy='+ str(accuracy[1])+'\n'
+            ', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)
+    return accuracy[1]
 
 def main():
     cnn_model(200, 200)
