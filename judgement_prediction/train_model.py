@@ -158,7 +158,7 @@ def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.
     return accuracy[1]
 
 def main():
-    rnn_lstm_model()
+    text_cnn_model()
 
 if __name__ == '__main__':
     main()
