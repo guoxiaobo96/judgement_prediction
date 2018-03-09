@@ -71,7 +71,7 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3):
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
     date = 'cnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
-            ', accuracy'+ str(accuracy[1])
+            ', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)
 
