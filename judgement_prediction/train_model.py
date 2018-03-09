@@ -82,7 +82,7 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
         target_file.write(date)
     return accuracy[1]
 
-def rnn__lstm_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=3):
+def rnn_lstm_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=3):
     from keras.models import Sequential
     from keras.layers import Embedding, LSTM, Dense
 
