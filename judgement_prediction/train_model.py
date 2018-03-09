@@ -86,6 +86,13 @@ def rnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.1, re
     from keras.models import Sequential
     from keras.layers import Embedding, LSTM, Dense
 
+    train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
+    segmentation = int(len(train_data)*valid_rate)
+    valid_data = train_data[:segmentation]
+    valid_label = train_label[:segmentation]
+    train_data = train_data[segmentation+1:]
+    train_label = train_label[segmentation+1:]
+    
     print('RNN......')
     model=Sequential()
     model.add(Embedding(len(vocab)+1, Embedding, input_length=max_len))
