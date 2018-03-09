@@ -9,14 +9,15 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
     from sklearn.model_selection import train_test_split
     from keras.preprocessing.text import Tokenizer
     from keras.preprocessing.sequence import pad_sequences
+    from keras.utils import to_categorical
     import pandas as pd
     import numpy as np
     print("getting data......")
     columns=['content', 'label']
-    data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns)
+    data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns, engine='python')
     data.reindex(np.random.permutation(data.index))
     content = data['content']
-    label = data['label']
+    label = to_categorical(np.array(data['label']))
     MAX_LEN = 200
     train_data, test_data, train_label, test_label = train_test_split(content, label,
                                                                       test_size=0.1, random_state=42)
@@ -51,13 +52,13 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
 
     print("cnn......")
     model = Sequential()
-    model.add(Embedding(len(vocab)+1, embedding, input_lenth=max_len))
+    model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
     model.add(Dropout(0.5))
     model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
     model.add(MaxPooling1D(5))
     model.add(Flatten())
     model.add(Dense(embedding, activation='relu'))
-    model.add(Dense(train_label.shape[1], activation='softmax'))
+    model.add(Dense(2, activation='softmax'))
     model.summary()
 
     model.compile(loss='categorical_crossentropy',
@@ -65,8 +66,8 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5):
               metrics=['acc'])
 
     model.fit(train_data, train_label,
-              batch_size=64, epochs=2, 
-              validation_data=(valid_data, valid_label))
+              validation_data=(valid_data, valid_label),
+              batch_size=64, epochs=2)
     print(model.evaluate(test_data, test_label))
 
 def main():
