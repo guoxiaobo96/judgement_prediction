@@ -115,7 +115,7 @@ def rnn_lstm_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.
     return accuracy[1]
 
 def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
-    from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten
+    from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
 
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
@@ -126,7 +126,7 @@ def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.
     train_label = train_label[segmentation+1:]
 
     main_input=Input(shape=(max_len,), dtype='float64')
-    embedder=embedding(len(vocab)+1, embedding, input_length=max_len)
+    embedder=Embedding(len(vocab)+1, embedding, input_length=max_len)
     embed=embedder(main_input)
 
     cnn1 = Convolution1D(256, 3, padding='same', strides = 1, activation='relu')(embed)
