@@ -1,0 +1,1 @@
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, accuracy0.9593147750329665
