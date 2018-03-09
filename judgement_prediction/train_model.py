@@ -40,7 +40,7 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
 def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3):
     """this part is based on cnn"""
     from keras.layers import Dense, Flatten, Dropout
-    from keras.layers import Conv1D, MaxPooling1D, Embedding, Convolution1D, BatchNormalization
+    from keras.layers import MaxPooling1D, Embedding, Convolution1D, BatchNormalization
     from keras.models import Sequential
 
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
@@ -82,6 +82,9 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
         target_file.write(date)
     return accuracy[1]
 
+def rnn_model((embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3)
+    from keras.models import Sequential
+    from keras.layers import   
 def main():
     cnn_model(embedding=200, max_len=200,drop_out=0.15)
 
