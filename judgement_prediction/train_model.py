@@ -107,7 +107,7 @@ def rnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.1, re
         target_file.write(date)
     return accuracy[1]
 def main():
-    cnn_model()
+    rnn_model()
 
 if __name__ == '__main__':
     main()
