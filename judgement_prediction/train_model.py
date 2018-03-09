@@ -40,7 +40,7 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
 def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3):
     """this part is based on cnn"""
     from keras.layers import Dense, Flatten, Dropout
-    from keras.layers import Conv1D, MaxPooling1D, Embedding
+    from keras.layers import Conv1D, MaxPooling1D, Embedding, Convolution1D, BatchNormalization
     from keras.models import Sequential
 
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
@@ -53,11 +53,17 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
     print("cnn......")
     model = Sequential()
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
-    model.add(Dropout(drop_out))
-    model.add(Conv1D(20, 5, padding='VALID', activation='relu', strides=1))
-    model.add(MaxPooling1D(5))
+    model.add(Convolution1D(256, 3, padding = 'same'))
+    model.add(MaxPooling1D(3, 3, padding='same'))
+    model.add(Convolution1D(128, 3, padding = 'same'))
+    model.add(MaxPooling1D(3, 3, padding='same'))
+    model.add(Convolution1D(64, 3, padding = 'same'))
     model.add(Flatten())
+    model.add(Dropout(drop_out))
+    model.add(BatchNormalization())
+    model.add(Dense(256, activation = 'relu'))
     model.add(Dense(embedding, activation='relu'))
+    model.add(Dropout(drop_out))
     model.add(Dense(2, activation='softmax'))
     model.summary()
 
@@ -77,7 +83,7 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
     return accuracy[1]
 
 def main():
-    cnn_model(200, 200)
+    cnn_model(embedding=200, max_len=200,drop_out=0.15)
 
 if __name__ == '__main__':
     main()
