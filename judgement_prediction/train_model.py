@@ -1,3 +1,32 @@
+from keras import backend as K
+from keras.engine.topology import Layer
+from keras import initializers
+class attention_layer(Layer):
+    def __init__(self, **kwargs):
+        self.__init__ = initializers.get('init')
+    def build(self, input_shape):
+        assert len(input_shape)==3
+        self.W = 1
+        self.b = 1
+        self.u = 1
+    
+    def call(self, x):
+        uit = K.dot(x, self.W) # 对应公式(5)
+        uit = K.squeeze(uit, -1) # 对应公式(5)
+        uit = uit + self.b # 对应公式(5)
+        uit = K.tanh(uit) # 对应公式(5)
+        ait = uit * self.u # 对应公式(6)
+        ait = K.exp(ait) # 对应公式(6)
+        # 对应公式(6)
+        ait /= K.cast(K.sum(ait, axis=1, keepdims=True) + K.epsilon(), K.floatx())
+        ait = K.expand_dims(ait) # 对应公式(7)
+        weighted_input = x * ait # 对应公式(7)
+        output = K.sum(weighted_input, axis=1) # 对应公式(7)
+        return output
+    
+    def compute_output_shape(self, input_shape):
+        return(input_shape[0], input_shape[-1])
+    
 def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt', mode='one_hot'):
     """从指定文件中获得待训练数据，数据源文件是txt文件以', '分割
     PARA:
@@ -35,7 +64,6 @@ def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.tx
         test_data = pad_sequences(test_data_ids, maxlen=MAX_LEN)
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
-
 
 def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3):
     """this part is based on cnn"""
@@ -82,9 +110,9 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
         target_file.write(date)
     return accuracy[1]
 
-def rnn_lstm_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=3):
+def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=3):
     from keras.models import Sequential
-    from keras.layers import Embedding, LSTM, Dense
+    from keras.layers import Embedding, GRU, Dense
 
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
     segmentation = int(len(train_data)*valid_rate)
@@ -96,7 +124,7 @@ def rnn_lstm_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.
     print('RNN......')
     model=Sequential()
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
-    model.add(LSTM(256, dropout=drop_out, recurrent_dropout=recurrent_dropout))
+    model.add(GRU(50, dropout=drop_out, recurrent_dropout=recurrent_dropout))
     model.add(Dense(2, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy',
@@ -158,7 +186,7 @@ def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.
     return accuracy[1]
 
 def main():
-    text_cnn_model()
+    rnn_gru_model(batch_size=32,epoch=2, max_len=200, embedding=200)
 
 if __name__ == '__main__':
     main()

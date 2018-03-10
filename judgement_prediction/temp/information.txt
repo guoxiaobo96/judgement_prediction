@@ -3,3 +3,8 @@ cnn model, embedding = 200, max_len=200, drop_out=0.15, valid_rate=0.5, batch_si
 cnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.9539614562304168
 rnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, recurrent_drop=0.1, batch_size64, epoch=3, accuracy=0.9400428265524625
 textcnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.8923982869379015
+rnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, recurrent_drop=0.1, batch_size64, epoch=3, accuracy=0.9598501071940142
+rnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, recurrent_drop=0.1, batch_size64, epoch=3, accuracy=0.9534261243246352
+rnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, recurrent_drop=0.1, batch_size32, epoch=3, accuracy=0.9603854390997958
+rnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, recurrent_drop=0.1, batch_size32, epoch=2, accuracy=0.9619914348171406
+rnn model, embedding = 200, max_len=200, drop_out=0.2, valid_rate=0.5, recurrent_drop=0.1, batch_size32, epoch=2, accuracy=0.9582441112214033
