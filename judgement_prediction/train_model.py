@@ -154,7 +154,7 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
         target_file.write(date)
     return accuracy[1]
 
-def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=3):
+def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=1):
     from keras.models import Sequential
     from keras.layers import Embedding, GRU, Dense, Bidirectional
 
@@ -169,7 +169,7 @@ def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2
     model=Sequential()
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
     model.add(Bidirectional(GRU(50, dropout=drop_out, recurrent_dropout=recurrent_dropout, return_sequences=True)))
-    model.add(Bidirectional(GRU(50, drop_out=drop_out, recurrent_dropout=recurrent_dropout)))
+    model.add(Bidirectional(GRU(50, dropout=drop_out, recurrent_dropout=recurrent_dropout)))
     model.add(Dense(2, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy',
@@ -182,12 +182,12 @@ def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
     date = 'rnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
-            ', recurrent_drop='+str(recurrent_dropout)+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
+            ', recurrent_drop='+str(recurrent_dropout)+', batch_size='+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)
     return accuracy[1]
 
-def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
+def text_cnn_model(embedding = 100, max_len = 200, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
     from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
 
@@ -231,7 +231,7 @@ def text_cnn_model(embedding = 200, max_len = 200, drop_out=0.2, valid_rate = 0.
     return accuracy[1]
 
 def main():
-    rnn_gru_model(batch_size=32,epoch=2, max_len=200, embedding=200)
+    rnn_gru_model(max_len=200, embedding=250,epoch=2, drop_out= 0.4)
 
 if __name__ == '__main__':
     main()
