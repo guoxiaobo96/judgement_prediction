@@ -1,31 +1,75 @@
 from keras import backend as K
 from keras.engine.topology import Layer
 from keras import initializers
-class attention_layer(Layer):
-    def __init__(self, **kwargs):
-        self.__init__ = initializers.get('init')
+class Attention(Layer):
+
+    def __init__(self, nb_head, size_per_head, **kwargs):
+        self.nb_head = nb_head
+        self.size_per_head = size_per_head
+        self.output_dim = nb_head*size_per_head
+        super(Attention, self).__init__(**kwargs)
+
     def build(self, input_shape):
-        assert len(input_shape)==3
-        self.W = 1
-        self.b = 1
-        self.u = 1
-    
+        self.WQ = self.add_weight(name='WQ', 
+                                  shape=(input_shape[0][-1], self.output_dim),
+                                  initializer='glorot_uniform',
+                                  trainable=True)
+        self.WK = self.add_weight(name='WK', 
+                                  shape=(input_shape[1][-1], self.output_dim),
+                                  initializer='glorot_uniform',
+                                  trainable=True)
+        self.WV = self.add_weight(name='WV', 
+                                  shape=(input_shape[2][-1], self.output_dim),
+                                  initializer='glorot_uniform',
+                                  trainable=True)
+        super(Attention, self).build(input_shape)
+        
+    def Mask(self, inputs, seq_len, mode='mul'):
+        if seq_len == None:
+            return inputs
+        else:
+            mask = K.one_hot(seq_len[:,0], K.shape(inputs)[1])
+            mask = 1 - K.cumsum(mask, 1)
+            for _ in range(len(inputs.shape)-2):
+                mask = K.expand_dims(mask, 2)
+            if mode == 'mul':
+                return inputs * mask
+            if mode == 'add':
+                return inputs - (1 - mask) * 1e12
+                
     def call(self, x):
-        uit = K.dot(x, self.W) # 对应公式(5)
-        uit = K.squeeze(uit, -1) # 对应公式(5)
-        uit = uit + self.b # 对应公式(5)
-        uit = K.tanh(uit) # 对应公式(5)
-        ait = uit * self.u # 对应公式(6)
-        ait = K.exp(ait) # 对应公式(6)
-        # 对应公式(6)
-        ait /= K.cast(K.sum(ait, axis=1, keepdims=True) + K.epsilon(), K.floatx())
-        ait = K.expand_dims(ait) # 对应公式(7)
-        weighted_input = x * ait # 对应公式(7)
-        output = K.sum(weighted_input, axis=1) # 对应公式(7)
-        return output
-    
+        #如果只传入Q_seq,K_seq,V_seq，那么就不做Mask
+        #如果同时传入Q_seq,K_seq,V_seq,Q_len,V_len，那么对多余部分做Mask
+        if len(x) == 3:
+            Q_seq,K_seq,V_seq = x
+            Q_len,V_len = None,None
+        elif len(x) == 5:
+            Q_seq,K_seq,V_seq,Q_len,V_len = x
+        #对Q、K、V做线性变换
+        Q_seq = K.dot(Q_seq, self.WQ)
+        Q_seq = K.reshape(Q_seq, (-1, K.shape(Q_seq)[1], self.nb_head, self.size_per_head))
+        Q_seq = K.permute_dimensions(Q_seq, (0,2,1,3))
+        K_seq = K.dot(K_seq, self.WK)
+        K_seq = K.reshape(K_seq, (-1, K.shape(K_seq)[1], self.nb_head, self.size_per_head))
+        K_seq = K.permute_dimensions(K_seq, (0,2,1,3))
+        V_seq = K.dot(V_seq, self.WV)
+        V_seq = K.reshape(V_seq, (-1, K.shape(V_seq)[1], self.nb_head, self.size_per_head))
+        V_seq = K.permute_dimensions(V_seq, (0,2,1,3))
+        #计算内积，然后mask，然后softmax
+        A = K.batch_dot(Q_seq, K_seq, axes=[3,3])
+        A = K.permute_dimensions(A, (0,3,2,1))
+        A = self.Mask(A, V_len, 'add')
+        A = K.permute_dimensions(A, (0,3,2,1))    
+        A = K.softmax(A)
+        #输出并mask
+        O_seq = K.batch_dot(A, V_seq, axes=[3,2])
+        O_seq = K.permute_dimensions(O_seq, (0,2,1,3))
+        O_seq = K.reshape(O_seq, (-1, K.shape(O_seq)[1], self.output_dim))
+        O_seq = self.Mask(O_seq, Q_len, 'mul')
+        return O_seq
+        
     def compute_output_shape(self, input_shape):
-        return(input_shape[0], input_shape[-1])
+        return (input_shape[0][0], input_shape[0][1], self.output_dim)
     
 def get_data(filename='D:/judgement_prediction/judgement_prediction/temp/data.txt', mode='one_hot'):
     """从指定文件中获得待训练数据，数据源文件是txt文件以', '分割
@@ -112,7 +156,7 @@ def cnn_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, ba
 
 def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2, recurrent_dropout=0.1, batch_size =64, epoch=3):
     from keras.models import Sequential
-    from keras.layers import Embedding, GRU, Dense
+    from keras.layers import Embedding, GRU, Dense, Bidirectional
 
     train_data, test_data, train_label, test_label, vocab = get_data(mode='sequence')
     segmentation = int(len(train_data)*valid_rate)
@@ -124,7 +168,8 @@ def rnn_gru_model(embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.2
     print('RNN......')
     model=Sequential()
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
-    model.add(GRU(50, dropout=drop_out, recurrent_dropout=recurrent_dropout))
+    model.add(Bidirectional(GRU(50, dropout=drop_out, recurrent_dropout=recurrent_dropout, return_sequences=True)))
+    model.add(Bidirectional(GRU(50, drop_out=drop_out, recurrent_dropout=recurrent_dropout)))
     model.add(Dense(2, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy',
