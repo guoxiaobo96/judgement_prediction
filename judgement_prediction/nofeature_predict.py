@@ -59,8 +59,11 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
     with open(file=test_label_filename, mode="a",encoding='utf-8') as target_file:
         target_file.write(test_label)
     print("case number:%d"%case_number)
-    print("death number:%d"%classification_number_count[1])
-    print("life number:%d"%classification_number_count[0])
+    print("temp number:%d"%classification_number_count[0])
+    print("short number:%d"%classification_number_count[1])
+    print("long number:%d"%classification_number_count[2])
+    print("life long number:%d"%classification_number_count[3])
+    print("death number:%d"%classification_number_count[4])
     return "xls2txt finish"
 
 def xls2csv(foldname='D:/案件数据/故意杀人案'):
