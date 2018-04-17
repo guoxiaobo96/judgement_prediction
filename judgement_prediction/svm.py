@@ -36,7 +36,9 @@ def svm(x_train,y_train,x_test,y_test):
     for i,pred in enumerate(preds):
         if int(pred) == int(y_test[i]):
             num += 1
-    print ('precision_score: '+str(float(num) / len(preds)))
+    test_accuracy=float(num) / len(preds)
+    print ('precision_score: '+str(test_accuracy))
+    return test_accuracy
 
 def main():
     case_type=input("please input case type:")
