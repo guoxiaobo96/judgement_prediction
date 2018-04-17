@@ -3,6 +3,7 @@ import sys
 import random
 import xlrd
 import jieba
+import cnn
 
 def xls2txt(case_name):
     """this part is used to change from xls to txt"""
@@ -119,6 +120,10 @@ def getLabel(content):
     else:
         return "1\n", 4
 
+def trainModel(method, int number):
+    if(model=='cnn')
+        for _ in range(number)
+            
 def main():
     """主程序，根据输入决定操作内容。
     prepare: 对于文本进行适当处理

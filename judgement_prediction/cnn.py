@@ -10,10 +10,10 @@ TEST_SPLIT = 0.2
 
 
 print("(1) load texts...")
-train_texts = open('D:/judgement_prediction/judgement_prediction/temp/train_content.txt', encoding='utf-8').read().split('\n')
-train_labels = open('D:/judgement_prediction/judgement_prediction/temp/train_label.txt', encoding='utf-8').read().split('\n')
-test_texts = open('D:/judgement_prediction/judgement_prediction/temp/test_content.txt', encoding='utf-8').read().split('\n')
-test_labels = open('D:/judgement_prediction/judgement_prediction/temp/test_label.txt', encoding='utf-8').read().split('\n')
+train_texts = open('D:/judgement_prediction/judgement_prediction/criminal/train_content.txt', encoding='utf-8').read().split('\n')
+train_labels = open('D:/judgement_prediction/judgement_prediction/criminal/train_label.txt', encoding='utf-8').read().split('\n')
+test_texts = open('D:/judgement_prediction/judgement_prediction/criminal/test_content.txt', encoding='utf-8').read().split('\n')
+test_labels = open('D:/judgement_prediction/judgement_prediction/criminal/test_label.txt', encoding='utf-8').read().split('\n')
 all_texts = train_texts + test_texts
 all_labels = train_labels + test_labels
 
