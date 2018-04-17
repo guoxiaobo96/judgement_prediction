@@ -4,12 +4,12 @@ import random
 import xlrd
 import jieba
 
-def xls2txt(foldname='D:/案件数据/故意杀人案'):
+def xls2txt(case_name):
     """this part is used to change from xls to txt"""
     classification_number_count=[0,0,0,0,0]
-    source_foldname = foldname
+    source_foldname = 'D:/案件数据/'+case_name
     source_file_list = os.listdir(source_foldname)
-    target_filename= 'D:/judgement_prediction/judgement_prediction/temp'
+    target_filename= 'D:/judgement_prediction/judgement_prediction/'+case_name
     train_content_filename = target_filename+"/train_content.txt"
     train_label_filename = target_filename+"/train_label.txt"
     test_content_filename = target_filename+"/test_content.txt"
@@ -66,12 +66,12 @@ def xls2txt(foldname='D:/案件数据/故意杀人案'):
     print("death number:%d"%classification_number_count[4])
     return "xls2txt finish"
 
-def xls2csv(foldname='D:/案件数据/故意杀人案'):
+def xls2csv(case_name):
     """this part is used to change the date from xls version to csv version"""
     classification_number_count=[0,0,0,0,0]
-    source_foldname = foldname
+    source_foldname = 'D:/案件数据/'+case_name
     source_file_list = os.listdir(source_foldname)
-    target_filename= 'D:/judgement_prediction/judgement_prediction/temp/data.txt'
+    target_filename= 'D:/judgement_prediction/judgement_prediction/'+case_name+'/data.txt'
     
     data=str()
     case_number = 0
@@ -126,10 +126,10 @@ def main():
     value = str('')
     value = input("please input action:")
     while value != 'quit':
-        if value == 'txt prepare':
-            xls2txt()
-        elif value=='csv prepare':
-            xls2csv()
+        if value.split()[1] == 'txt':
+            xls2txt(value.split()[0])
+        elif value.split()[1]=='csv':
+            xls2csv(value.split()[0])
         value = input("please input action:")
 
 main()
