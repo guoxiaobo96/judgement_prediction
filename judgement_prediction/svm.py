@@ -6,10 +6,10 @@ def loadText(case_type):
     train_labels = open('D:/judgement_prediction/judgement_prediction/'+case_type+'/train_label.txt', encoding='utf-8').read().split('\n')
     test_texts = open('D:/judgement_prediction/judgement_prediction/'+case_type+'/test_content.txt', encoding='utf-8').read().split('\n')
     test_labels = open('D:/judgement_prediction/judgement_prediction/'+case_type+'/test_label.txt', encoding='utf-8').read().split('\n')
-#    all_text = train_texts + test_texts
+    all_text = train_texts + test_texts
     print ('(2) doc to var...') 
     count_v0= CountVectorizer() 
-#    counts_all = count_v0.fit_transform(all_text)
+    count_v0.fit_transform(all_text)
     count_v1= CountVectorizer(vocabulary=count_v0.vocabulary_)  
     counts_train = count_v1.fit_transform(train_texts)   
     print ("the shape of train is "+repr(counts_train.shape))  

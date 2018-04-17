@@ -230,8 +230,8 @@ def text_cnn_model(embedding = 100, max_len = 200, drop_out=0.2, valid_rate = 0.
         target_file.write(date)
     return accuracy[1]
 
+    
 def main():
-    rnn_gru_model(max_len=200, embedding=250,epoch=2, drop_out= 0.4)
-
+    pass
 if __name__ == '__main__':
     main()

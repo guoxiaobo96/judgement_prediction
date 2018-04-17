@@ -3,7 +3,6 @@ import sys
 import random
 import xlrd
 import jieba
-import cnn
 
 def xls2txt(case_name):
     """this part is used to change from xls to txt"""
@@ -120,21 +119,38 @@ def getLabel(content):
     else:
         return "1\n", 4
 
-def trainModel(method, int number):
-    if(model=='cnn')
-        for _ in range(number)
+def train(model,case_type,number=1):
+    average_accuracy=0
+    test_accuracy=list()
+    if model=='svm':
+        import svm
+        x_train,y_train,x_test,y_test=svm.loadText(case_type)
+        for _ in range(int(number)):
+            test_accuracy.append(svm.svm(x_train,y_train,x_test,y_test))
+            average_accuracy=average_accuracy+test_accuracy[_]
+        average_accuracy=average_accuracy/int(number)
+        print("aveage accuract:" +str(average_accuracy))
+        with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
+            target_file.write('svm:')
+            for i in range(int(number)):
+                target_file.write(test_accuracy[i])
+            target_file.write(average_accuracy)
             
 def main():
     """主程序，根据输入决定操作内容。
     prepare: 对于文本进行适当处理
     cmm: 采用textcnn对于处理好的文本进行分类"""
-    value = str('')
-    value = input("please input action:")
-    while value != 'quit':
-        if value.split()[1] == 'txt':
-            xls2txt(value.split()[0])
-        elif value.split()[1]=='csv':
-            xls2csv(value.split()[0])
-        value = input("please input action:")
+    command_line = str('')
+    command_line = input("please input action:")
+    while command_line != 'quit':
+        if command_line.split()[0]=='prepare':
+            if command_line.split()[1] == 'txt':
+                xls2txt(command_line.split()[0])
+            elif command_line.split()[1]=='csv':
+                xls2csv(command_line.split()[0])
+        elif command_line.split()[0]=='train':
+            if command_line.split()[1] == 'svm':
+                train(command_line.split()[1],command_line.split()[2],command_line.split()[3])
+        command_line = input("please input action:")
 
 main()
