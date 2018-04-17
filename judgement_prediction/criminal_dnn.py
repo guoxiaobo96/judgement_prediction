@@ -8,9 +8,9 @@ import numpy as np
 import tensorflow as tf
  
 # Data sets
-IRIS_TRAINING = "D:/案件数据/故意杀人案/train.csv"
+IRIS_TRAINING = "D:/案件数据/criminal/train.csv"
  
-IRIS_TEST = "D:/案件数据/故意杀人案/test.csv"
+IRIS_TEST = "D:/案件数据/criminal/test.csv"
  
 def main():
  
