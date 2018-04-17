@@ -105,16 +105,16 @@ def xls2csv(foldname='D:/案件数据/故意杀人案'):
 def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
-#        if content.find("缓刑")!=-1:
-        return "0\n", 0
-#        elif content.find("无期徒刑")!=-1:
-#            return "3\n"
-#        elif content.find("十")!=-1:
-#            return "2\n"
-#        else:
-#            return "1\n"
+        if content.find("缓刑")!=-1:
+            return "0\n", 0
+        elif content.find("无期徒刑")!=-1:
+            return "3\n", 3
+        elif content.find("十")!=-1:
+            return "2\n", 2
+        else:
+            return "1\n", 1
     else:
-        return "1\n", 1
+        return "1\n", 4
 
 def main():
     """主程序，根据输入决定操作内容。
