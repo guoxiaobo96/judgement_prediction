@@ -37,7 +37,7 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3):
+def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
     """this part is based on cnn"""
     from keras.layers import Dense, Flatten, Dropout
     from keras.layers import MaxPooling1D, Embedding, Convolution1D, BatchNormalization
@@ -53,8 +53,8 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_o
     print("cnn......")
     model = Sequential()
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
-    model.add(Convolution1D(256, 3, padding = 'same'))
-    model.add(MaxPooling1D(3, 3, padding='same'))
+    model.add(Convolution1D(256, 7, padding = 'same'))
+    model.add(MaxPooling1D(7, 3, padding='same'))
     model.add(Convolution1D(128, 3, padding = 'same'))
     model.add(MaxPooling1D(3, 3, padding='same'))
     model.add(Convolution1D(64, 3, padding = 'same'))
@@ -64,7 +64,7 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_o
     model.add(Dense(256, activation = 'relu'))
     model.add(Dense(embedding, activation='relu'))
     model.add(Dropout(drop_out))
-    model.add(Dense(2, activation='softmax'))
+    model.add(Dense(4, activation='softmax'))
     model.summary()
 
     model.compile(loss='categorical_crossentropy',
