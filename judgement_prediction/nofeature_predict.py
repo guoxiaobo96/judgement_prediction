@@ -91,7 +91,7 @@ def xls2csv(case_name):
             content = content.replace('\n', '')
             temp_label = sheet.cell(_, 14).value+''
             label, classification_number = getLabel(temp_label)
-            classification_number_count[classification_number]+=1
+            classification_number_count[classification_number-1]+=1
             delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
                    '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
             for i in range(len(delete_list)):
@@ -112,15 +112,15 @@ def getLabel(content):
     """this part is used to label the case and it should be changed when dealing with different cases"""
     if content.find("死刑")==-1:
         if content.find("缓刑")!=-1:
-            return "0\n", 0
+            return "0\n", 1
         elif content.find("无期徒刑")!=-1:
-            return "3\n", 3
+            return "3\n", 4
         elif content.find("十")!=-1:
-            return "2\n", 2
+            return "2\n", 3
         else:
-            return "1\n", 1
+            return "1\n", 2
     else:
-        return "1\n", 4
+        return "1\n", 5
 
 def train(model,case_type,number=1):
     average_accuracy=0
