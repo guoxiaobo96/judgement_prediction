@@ -57,7 +57,7 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_o
     model.add(Conv1D(250, 3, padding='valid', activation='relu', strides=1))
     model.add(MaxPooling1D(4))
     model.add(Flatten())
-    model.add(Dense(EMBEDDING_DIM, activation='relu'))
+    model.add(Dense(embedding, activation='relu'))
     model.add(Dense(4, activation='softmax'))
     model.summary()
 
