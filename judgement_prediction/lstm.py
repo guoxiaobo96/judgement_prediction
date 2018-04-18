@@ -51,7 +51,7 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_o
     train_label = train_label[segmentation+1:]
 
     model = Sequential()
-    model.add(Embedding(len(word_index) + 1, embedding, input_length=MAX_SEQUENCE_LENGTH))
+    model.add(Embedding(len(vocab) + 1, embedding, input_length=max_len))
     model.add(LSTM(200, dropout=0.2, recurrent_dropout=0.2))
     model.add(Dropout(0.2))
     model.add(Dense(5, activation='softmax'))
