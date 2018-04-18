@@ -55,10 +55,10 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_o
     model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
     model.add(Dropout(0.2))
     model.add(Conv1D(250, 3, padding='valid', activation='relu', strides=1))
-    model.add(MaxPooling1D(4))
+    model.add(MaxPooling1D(5))
     model.add(Flatten())
     model.add(Dense(embedding, activation='relu'))
-    model.add(Dense(4, activation='softmax'))
+    model.add(Dense(5, activation='softmax'))
     model.summary()
 
     model.compile(loss='categorical_crossentropy',
