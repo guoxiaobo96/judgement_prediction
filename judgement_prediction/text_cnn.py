@@ -37,11 +37,9 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_out=0.3, batch_size =64, epoch=3):
-    """this part is based on cnn"""
-    from keras.layers import Dense, Flatten, Dropout
-    from keras.layers import MaxPooling1D, Embedding, Convolution1D, BatchNormalization
-    from keras.models import Sequential
+def text_cnn_model(case_type,embedding = 100, max_len = 200, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
+    from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
+    from keras.models import Model
 
     train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
     segmentation = int(len(train_data)*valid_rate)
@@ -50,24 +48,24 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_o
     train_data = train_data[segmentation+1:]
     train_label = train_label[segmentation+1:]
 
-    print("cnn......")
-    model = Sequential()
-    model.add(Embedding(len(vocab)+1, embedding, input_length=max_len))
-    model.add(Convolution1D(256, 3, padding = 'same'))
-    model.add(MaxPooling1D(3, 3, padding='same'))
-    model.add(Convolution1D(128, 3, padding = 'same'))
-    model.add(MaxPooling1D(3, 3, padding='same'))
-    model.add(Convolution1D(64, 3, padding = 'same'))
-    model.add(Flatten())
-    model.add(Dropout(drop_out))
-    model.add(BatchNormalization())
-    model.add(Dense(256, activation = 'relu'))
-    model.add(Dense(embedding, activation='relu'))
-    model.add(Dropout(drop_out))
-    model.add(Dense(2, activation='softmax'))
-    model.summary()
+    main_input=Input(shape=(max_len,), dtype='float64')
+    embedder=Embedding(len(vocab)+1, embedding, input_length=max_len)
+    embed=embedder(main_input)
 
-    model.compile(loss='categorical_crossentropy',
+    cnn1 = Convolution1D(256, 3, padding='same', strides = 1, activation='relu')(embed)
+    cnn1 = MaxPool1D(pool_size=4)(cnn1)
+    cnn2 = Convolution1D(256, 4, padding='same', strides = 1, activation='relu')(embed)
+    cnn2 = MaxPool1D(pool_size=4)(cnn2)
+    cnn3 = Convolution1D(256, 5, padding='same', strides = 1, activation='relu')(embed)
+    cnn3 = MaxPool1D(pool_size=4)(cnn3)
+
+    cnn = concatenate([cnn1,cnn2,cnn3], axis=-1)
+    flat = Flatten()(cnn)
+    drop = Dropout(drop_out)(flat)
+    main_output = Dense(2, activation='softmax')(drop)
+    model = Model(inputs = main_input, outputs = main_output)
+
+    model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',
               metrics=['acc'])
 
@@ -76,15 +74,15 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_o
               batch_size=batch_size, epochs=epoch)
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
-    date = 'cnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
+    date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
             ', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
-    with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
+    with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)
     return accuracy[1]
 
 def main():
     case_type=input("please input case type:")
-    cnn_model(case_type)
+    text_cnn_model(case_type)
 
 if __name__=='__main__':
     main()
