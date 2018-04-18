@@ -4,4 +4,7 @@ cnn:cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch
 cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.8329764452685126
 cnn:0.7912205568728151 0.8329764452685126 ,average:0.8120985010706638cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.5749464667456053
 cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.7403640255682984
-cnn:0.5749464667456053 0.7403640255682984 ,average:0.6576552461569518
+cnn:0.5749464667456053 0.7403640255682984 ,average:0.6576552461569518cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.9373661670235546
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.9298715204702455
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.926659529035556
+cnn:0.9373661670235546 0.9298715204702455 0.926659529035556 ,average:0.931299072176452
