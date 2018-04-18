@@ -25,7 +25,7 @@ def loadText(case_type):
     y_test = test_labels
     return x_train,y_train,x_test,y_test
 
-def svm(x_train,y_train,x_test,y_test):
+def train(x_train,y_train,x_test,y_test):
     print ('(3) SVM...')
     from sklearn.svm import SVC   
     svclf = SVC(kernel = 'linear') 
@@ -43,7 +43,7 @@ def svm(x_train,y_train,x_test,y_test):
 def main():
     case_type=input("please input case type:")
     x_train,y_train,x_test,y_test=loadText(case_type)
-    svm(x_train,y_train,x_test,y_test)
+    train(x_train,y_train,x_test,y_test)
 
 if __name__=='__main__':
     main()

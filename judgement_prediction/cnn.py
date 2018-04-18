@@ -37,7 +37,7 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
+def train_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
     """this part is based on cnn"""
     from keras.layers import Dense, Flatten, Dropout
     from keras.layers import Conv1D, MaxPooling1D, Embedding
@@ -79,7 +79,7 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_o
 
 def main():
     case_type=input("please input case type:")
-    cnn_model(case_type)
+    train_model(case_type)
 
 if __name__=='__main__':
     main()
