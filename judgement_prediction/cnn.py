@@ -40,7 +40,7 @@ def get_data(case_type, mode='one_hot'):
 def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
     """this part is based on cnn"""
     from keras.layers import Dense, Flatten, Dropout
-    from keras.layers import MaxPooling1D, Embedding, Convolution1D, BatchNormalization
+    from keras.layers import Conv1D, MaxPooling1D, Embedding, GlobalMaxPooling1D
     from keras.models import Sequential
 
     train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
