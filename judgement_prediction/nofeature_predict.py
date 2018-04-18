@@ -133,8 +133,8 @@ def train(model,case_type,number=1):
         with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
             target_file.write('svm:')
             for i in range(int(number)):
-                target_file.write(test_accuracy[i])
-            target_file.write(average_accuracy)
+                target_file.write(str(test_accuracy[i])+' ')
+            target_file.write(',average:'+str(average_accuracy))
     elif model=='cnn':
         import cnn
         for _ in range(int(number)):
@@ -145,8 +145,8 @@ def train(model,case_type,number=1):
         with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
             target_file.write('cnn:')
             for i in range(int(number)):
-                target_file.write(test_accuracy[i])
-            target_file.write(average_accuracy)
+                target_file.write(str(test_accuracy[i])+' ')
+            target_file.write(',average:'+str(average_accuracy))
             
 def main():
     """主程序，根据输入决定操作内容。
@@ -157,11 +157,13 @@ def main():
     while command_line != 'quit':
         if command_line.split()[0]=='prepare':
             if command_line.split()[1] == 'txt':
-                xls2txt(command_line.split()[0])
+                xls2txt(command_line.split()[2])
             elif command_line.split()[1]=='csv':
-                xls2csv(command_line.split()[0])
+                xls2csv(command_line.split()[2])
         elif command_line.split()[0]=='train':
             if command_line.split()[1] == 'svm':
+                train(command_line.split()[1],command_line.split()[2],command_line.split()[3])
+            elif command_line.split()[1] == 'cnn':
                 train(command_line.split()[1],command_line.split()[2],command_line.split()[3])
         command_line = input("please input action:")
 

@@ -1,1 +1,7 @@
-cnn 0.22 0.93，0.25 0.91,0.25 0.92, 0.26 0.92,svm:
+cnn 0.22 0.93，0.25 0.91,0.25 0.92, 0.26 0.92,svm:cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.8961456104060057
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.8731263382021314
+cnn:cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.7912205568728151
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.8329764452685126
+cnn:0.7912205568728151 0.8329764452685126 ,average:0.8120985010706638cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.5749464667456053
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.7403640255682984
+cnn:0.5749464667456053 0.7403640255682984 ,average:0.6576552461569518
