@@ -72,10 +72,10 @@ def text_cnn_model(case_type,embedding = 100, max_len = 200, drop_out=0.2, valid
     model.fit(train_data, train_label,
               validation_data=(valid_data, valid_label),
               batch_size=batch_size, epochs=epoch)
+    model.save('text_cnn.h5')
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
-    date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
-            ', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
+    date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)
     return accuracy[1]

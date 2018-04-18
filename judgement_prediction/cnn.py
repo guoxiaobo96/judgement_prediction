@@ -74,6 +74,7 @@ def cnn_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.5, drop_o
     model.fit(train_data, train_label,
               validation_data=(valid_data, valid_label),
               batch_size=batch_size, epochs=epoch)
+    model.save('cnn.h5')
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
     date = 'cnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
