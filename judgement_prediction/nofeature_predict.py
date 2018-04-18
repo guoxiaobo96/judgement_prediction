@@ -135,6 +135,18 @@ def train(model,case_type,number=1):
             for i in range(int(number)):
                 target_file.write(test_accuracy[i])
             target_file.write(average_accuracy)
+    elif model=='cnn':
+        import cnn
+        for _ in range(int(number)):
+            test_accuracy.append(cnn.cnn_model(case_type))
+            average_accuracy=average_accuracy+test_accuracy[_]
+        average_accuracy=average_accuracy/int(number)
+        print("aveage accuract:" +str(average_accuracy))
+        with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
+            target_file.write('cnn:')
+            for i in range(int(number)):
+                target_file.write(test_accuracy[i])
+            target_file.write(average_accuracy)
             
 def main():
     """主程序，根据输入决定操作内容。
