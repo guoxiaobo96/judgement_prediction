@@ -129,7 +129,7 @@ def train(model,case_type,number=1):
         import svm
         x_train,y_train,x_test,y_test=svm.loadText(case_type)
         for _ in range(int(number)):
-            test_accuracy.append(svm.svm(x_train,y_train,x_test,y_test))
+            test_accuracy.append(svm.train(x_train,y_train,x_test,y_test))
             average_accuracy=average_accuracy+test_accuracy[_]
         average_accuracy=average_accuracy/int(number)
         print("aveage accuract:" +str(average_accuracy))
@@ -141,7 +141,7 @@ def train(model,case_type,number=1):
     elif model=='cnn':
         import cnn
         for _ in range(int(number)):
-            test_accuracy.append(cnn.cnn_model(case_type))
+            test_accuracy.append(cnn.train_model(case_type))
             average_accuracy=average_accuracy+test_accuracy[_]
         average_accuracy=average_accuracy/int(number)
         print("aveage accuract:" +str(average_accuracy))
@@ -164,10 +164,7 @@ def main():
             elif command_line.split()[1]=='csv':
                 xls2csv(command_line.split()[2])
         elif command_line.split()[0]=='train':
-            if command_line.split()[1] == 'svm':
-                train(command_line.split()[1],command_line.split()[2],command_line.split()[3])
-            elif command_line.split()[1] == 'cnn':
-                train(command_line.split()[1],command_line.split()[2],command_line.split()[3])
+            train(command_line.split()[1],command_line.split()[2],command_line.split()[3])
         command_line = input("please input action:")
 
 main()
