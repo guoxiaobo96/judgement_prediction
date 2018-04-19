@@ -19,7 +19,7 @@ def get_data(case_type, mode='one_hot'):
     data.reindex(np.random.permutation(data.index))
     content = data['content']
     label = to_categorical(np.array(data['label']))
-    MAX_LEN = 200
+    MAX_LEN = 300
     train_data, test_data, train_label, test_label = train_test_split(content, label,
                                                                       test_size=0.1, random_state=42)
     tokenizer = Tokenizer(filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n',lower=True,split=" ")
@@ -37,11 +37,10 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def text_cnn_model(case_type,embedding = 100, max_len = 200, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
+def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 300, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
     from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
 
-    train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
     segmentation = int(len(train_data)*valid_rate)
     valid_data = train_data[:segmentation]
     valid_label = train_label[:segmentation]
@@ -82,7 +81,8 @@ def text_cnn_model(case_type,embedding = 100, max_len = 200, drop_out=0.2, valid
 
 def main():
     case_type=input("please input case type:")
-    text_cnn_model(case_type)
+    train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
+    train_model(case_type,train_data, test_data, train_label, test_label, vocab)
 
 if __name__=='__main__':
     main()

@@ -145,8 +145,20 @@ def train(model,case_type,number=1):
         for _ in range(int(number)):
             test_accuracy.append(cnn.train_model(case_type,train_data, test_data, train_label, test_label, vocab))
             average_accuracy=average_accuracy+test_accuracy[_]
-        average_accuracy=average_accuracy/int(number)
-        print("aveage accuract:" +str(average_accuracy))
+    elif model=='lstm':
+        import lstm
+        train_data, test_data, train_label, test_label, vocab = lstm.get_data(case_type,mode='sequence')
+        for _ in range(int(number)):
+            test_accuracy.append(lstm.train_model(case_type,train_data, test_data, train_label, test_label, vocab))
+            average_accuracy=average_accuracy+test_accuracy[_]
+    elif model=='text_cnn':
+        import text_cnn
+        train_data, test_data, train_label, test_label, vocab = text_cnn.get_data(case_type,mode='sequence')
+        for _ in range(int(number)):
+            test_accuracy.append(text_cnn.train_model(case_type,train_data, test_data, train_label, test_label, vocab))
+            average_accuracy=average_accuracy+test_accuracy[_]
+    average_accuracy=average_accuracy/int(number)
+    print("aveage accuract:" +str(average_accuracy))
     with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(case_type)
         for i in range(int(number)):
