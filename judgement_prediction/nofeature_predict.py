@@ -140,8 +140,9 @@ def train(model,case_type,number=1):
             target_file.write(',average:'+str(average_accuracy))
     elif model=='cnn':
         import cnn
+        train_data, test_data, train_label, test_label, vocab = cnn.get_data(case_type,mode='sequence')
         for _ in range(int(number)):
-            test_accuracy.append(cnn.train_model(case_type))
+            test_accuracy.append(cnn.train_model(case_type,train_data, test_data, train_label, test_label, vocab))
             average_accuracy=average_accuracy+test_accuracy[_]
         average_accuracy=average_accuracy/int(number)
         print("aveage accuract:" +str(average_accuracy))
