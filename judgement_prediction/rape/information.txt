@@ -1,0 +1,5 @@
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.858682634730539
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.8407185628742515
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.8538922155688623
+cnn 0.858682634730539 0.8407185628742515 0.8538922155688623 ,average:0.8510978043912175
+rape0.8799755052051439 ,average:0.8799755052051439

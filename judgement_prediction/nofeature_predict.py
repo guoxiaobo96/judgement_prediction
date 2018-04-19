@@ -31,6 +31,9 @@ def xls2txt(case_name):
             position = content.find("本院认为")
             if position>0:
                 content = content[position:]
+            position = content.find("中华人民共和国刑法")
+            if position>0:
+                content = content[:position]
             content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
             content = content.replace('\n', '')+'\n'
             temp_label = sheet.cell(_, 14).value+''
@@ -87,6 +90,9 @@ def xls2csv(case_name):
             position = content.find("本院认为")
             if position>0:
                 content = content[position:]
+            position = content.find("中华人民共和国刑法")
+            if position>0:
+                content = content[:position]
             content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
             content = content.replace('\n', '')
             temp_label = sheet.cell(_, 14).value+''
@@ -133,11 +139,6 @@ def train(model,case_type,number=1):
             average_accuracy=average_accuracy+test_accuracy[_]
         average_accuracy=average_accuracy/int(number)
         print("aveage accuract:" +str(average_accuracy))
-        with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
-            target_file.write('svm:')
-            for i in range(int(number)):
-                target_file.write(str(test_accuracy[i])+' ')
-            target_file.write(',average:'+str(average_accuracy))
     elif model=='cnn':
         import cnn
         train_data, test_data, train_label, test_label, vocab = cnn.get_data(case_type,mode='sequence')
@@ -146,11 +147,11 @@ def train(model,case_type,number=1):
             average_accuracy=average_accuracy+test_accuracy[_]
         average_accuracy=average_accuracy/int(number)
         print("aveage accuract:" +str(average_accuracy))
-        with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
-            target_file.write('cnn:')
-            for i in range(int(number)):
-                target_file.write(str(test_accuracy[i])+' ')
-            target_file.write(',average:'+str(average_accuracy))
+    with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
+        target_file.write(case_type)
+        for i in range(int(number)):
+            target_file.write(str(test_accuracy[i])+' ')
+        target_file.write(',average:'+str(average_accuracy)+'\n')
             
 def main():
     """主程序，根据输入决定操作内容。
