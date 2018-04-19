@@ -37,13 +37,12 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def train_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
+def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
     """this part is based on cnn"""
     from keras.layers import Dense, Dropout
     from keras.layers import LSTM, Embedding
     from keras.models import Sequential
 
-    train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
     segmentation = int(len(train_data)*valid_rate)
     valid_data = train_data[:segmentation]
     valid_label = train_label[:segmentation]
@@ -75,7 +74,8 @@ def train_model(case_type,embedding = 200, max_len = 200, valid_rate = 0.2, drop
 
 def main():
     case_type=input("please input case type:")
-    train_model(case_type)
+    train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
+    train_model(case_type,train_data, test_data, train_label, test_label, vocab)
 
 if __name__=='__main__':
     main()
