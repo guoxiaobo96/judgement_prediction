@@ -1,0 +1,1 @@
+textcnn model, embedding = 100, max_len=200, drop_out=0.2, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.9384431050923057

@@ -1,2 +1,4 @@
 criminal0.5861884367032021 0.6391862956308451 0.6466809420565212 ,average:0.6240185581301895
 criminal0.716302610548748 ,average:0.716302610548748
+cnn model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.5808351176453862
+textcnn model, embedding = 100, max_len=200, drop_out=0.2, valid_rate=0.5, batch_size64, epoch=3, accuracy=0.8467880123687761

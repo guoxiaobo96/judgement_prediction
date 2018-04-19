@@ -38,7 +38,7 @@ def get_data(case_type, mode='one_hot'):
     return train_data, test_data, train_label, test_label, vocab
 
 def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 200, valid_rate = 0.2, drop_out=0.3, batch_size =64, epoch=2):
-    """this part is based on cnn"""
+    """this part is based on lstm"""
     from keras.layers import Dense, Dropout
     from keras.layers import LSTM, Embedding
     from keras.models import Sequential
@@ -63,10 +63,10 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
     model.fit(train_data, train_label,
               validation_data=(valid_data, valid_label),
               batch_size=batch_size, epochs=epoch)
-    model.save('cnn.h5')
+    model.save('lstm.h5')
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
-    date = 'cnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
+    date = 'lstm model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+\
             ', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)

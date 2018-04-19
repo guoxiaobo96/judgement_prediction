@@ -62,7 +62,7 @@ def text_cnn_model(case_type,embedding = 100, max_len = 200, drop_out=0.2, valid
     cnn = concatenate([cnn1,cnn2,cnn3], axis=-1)
     flat = Flatten()(cnn)
     drop = Dropout(drop_out)(flat)
-    main_output = Dense(2, activation='softmax')(drop)
+    main_output = Dense(len(train_label[1]), activation='softmax')(drop)
     model = Model(inputs = main_input, outputs = main_output)
 
     model.compile(loss='binary_crossentropy',
@@ -76,7 +76,7 @@ def text_cnn_model(case_type,embedding = 100, max_len = 200, drop_out=0.2, valid
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
     date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
-    with open(file='D:/judgement_prediction/judgement_prediction/temp/information.txt', mode="a",encoding='utf-8') as target_file:
+    with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
         target_file.write(date)
     return accuracy[1]
 
