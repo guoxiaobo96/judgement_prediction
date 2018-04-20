@@ -120,13 +120,64 @@ def getLabel(content):
         if content.find("缓刑")!=-1:
             return "0\n", 0
         elif content.find("无期徒刑")!=-1:
-            return "3\n", 3
+            return "30\n", 30
         elif content.find("徒刑十")!=-1:
-            return "2\n", 2
+            if content.find("徒刑十一年")!=-1:
+                return "11\n", 11
+            elif content.find("徒刑十二年")!=-1:
+                return "12\n", 12
+            elif content.find("徒刑十三年")!=-1:
+                return "13\n", 13
+            elif content.find("徒刑十四年")!=-1:
+                return "14\n", 14
+            elif content.find("徒刑十五年")!=-1:
+                return "15\n", 15
+            elif content.find("徒刑十六年")!=-1:
+                return "16\n", 16
+            elif content.find("徒刑十七年")!=-1:
+                return "17\n", 17
+            elif content.find("徒刑十八年")!=-1:
+                return "18\n", 18
+            elif content.find("徒刑十九年")!=-1:
+                return "19\n", 19
+            else:
+                return "10\n",10
+        elif content.find("徒刑二十")!=-1:
+            if content.find("徒刑二十一年")!=-1:
+                return "21\n", 21
+            elif content.find("徒刑二十二年")!=-1:
+                return "22\n", 22
+            elif content.find("徒刑二十三年")!=-1:
+                return "23\n", 23
+            elif content.find("徒刑二十四年")!=-1:
+                return "24\n", 24
+            elif content.find("徒刑二十五年")!=-1:
+                return "25\n", 25
+            else:
+                return "20\n",20
         else:
-            return "1\n", 1
+            if content.find("一年")!=-1:
+                return "1\n", 1
+            elif content.find("二年")!=-1:
+                return "2\n", 2
+            elif content.find("三年")!=-1:
+                return "3\n", 3
+            elif content.find("四年")!=-1:
+                return "4\n", 4
+            elif content.find("五年")!=-1:
+                return "5\n", 5
+            elif content.find("六年")!=-1:
+                return "6\n", 6
+            elif content.find("七年")!=-1:
+                return "7\n", 7
+            elif content.find("八年")!=-1:
+                return "8\n", 8
+            elif content.find("九年")!=-1:
+                return "9\n", 9
+            else:
+                return "10\n",10
     else:
-        return "4\n", 4
+        return "40\n", 40
 
 def train(model,case_type,number=1):
     average_accuracy=0
