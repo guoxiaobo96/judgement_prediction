@@ -135,7 +135,7 @@ def train(model,case_type,number=1):
         import svm
         x_train,y_train,x_test,y_test=svm.loadText(case_type)
         for _ in range(int(number)):
-            test_accuracy.append(svm.train(x_train,y_train,x_test,y_test))
+            test_accuracy.append(svm.train(x_train,y_train,x_test,y_test)) 
             average_accuracy=average_accuracy+test_accuracy[_]
         average_accuracy=average_accuracy/int(number)
         print("aveage accuract:" +str(average_accuracy))

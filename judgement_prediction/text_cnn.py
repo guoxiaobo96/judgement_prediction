@@ -19,7 +19,7 @@ def get_data(case_type, mode='one_hot'):
     data.reindex(np.random.permutation(data.index))
     content = data['content']
     label = to_categorical(np.array(data['label']))
-    MAX_LEN = 300
+    MAX_LEN = 400
     train_data, test_data, train_label, test_label = train_test_split(content, label,
                                                                       test_size=0.1, random_state=42)
     tokenizer = Tokenizer(filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n',lower=True,split=" ")
@@ -37,7 +37,7 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 300, drop_out=0.2, valid_rate = 0.5, batch_size =64, epoch=3):
+def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 400, drop_out=0.2, valid_rate = 0.2, batch_size =64, epoch=3):
     from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
 
@@ -57,8 +57,10 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
     cnn2 = MaxPool1D(pool_size=4)(cnn2)
     cnn3 = Convolution1D(256, 5, padding='same', strides = 1, activation='relu')(embed)
     cnn3 = MaxPool1D(pool_size=4)(cnn3)
+    cnn4 = Convolution1D(256, 2, padding='same', strides = 1, activation='relu')(embed)
+    cnn4 = MaxPool1D(pool_size=4)(cnn4)
 
-    cnn = concatenate([cnn1,cnn2,cnn3], axis=-1)
+    cnn = concatenate([cnn1,cnn2,cnn3,cnn4], axis=-1)
     flat = Flatten()(cnn)
     drop = Dropout(drop_out)(flat)
     main_output = Dense(len(train_label[1]), activation='softmax')(drop)
