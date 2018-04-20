@@ -71,7 +71,7 @@ def xls2txt(case_name):
 
 def xls2csv(case_name):
     """this part is used to change the date from xls version to csv version"""
-    classification_number_count=[0,0,0,0,0]
+    classification_number_count=[None for i in range(50)]
     source_foldname = 'D:/案件数据/'+case_name
     source_file_list = os.listdir(source_foldname)
     target_filename= 'D:/judgement_prediction/judgement_prediction/'+case_name+'/data.txt'
@@ -97,7 +97,7 @@ def xls2csv(case_name):
             content = content.replace('\n', '')
             temp_label = sheet.cell(_, 14).value+''
             label, classification_number = getLabel(temp_label)
-            classification_number_count[classification_number-1]+=1
+            classification_number_count[classification_number]+=1
             delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
                    '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
             for i in range(len(delete_list)):
@@ -106,12 +106,14 @@ def xls2csv(case_name):
     data = " ".join(jieba.cut(data))
     with open(file=target_filename, mode="a",encoding='utf-8') as target_file:
         target_file.write(data)
-    print("case number:%d"%case_number)
-    print("temp number:%d"%classification_number_count[0])
-    print("short number:%d"%classification_number_count[1])
-    print("long number:%d"%classification_number_count[2])
-    print("life long number:%d"%classification_number_count[3])
-    print("death number:%d"%classification_number_count[4])
+#    print("case number:%d"%case_number)
+#    print("temp number:%d"%classification_number_count[0])
+#    print("short number:%d"%classification_number_count[1])
+#    print("long number:%d"%classification_number_count[2])
+#    print("life long number:%d"%classification_number_count[3])
+#    print("death number:%d"%classification_number_count[4])
+    for i in len(classification_number_count):
+        print(classification_number_count[i])
     return "xls2csv finish"
 
 def getLabel(content):
