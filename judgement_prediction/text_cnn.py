@@ -1,3 +1,10 @@
+def set_one_hot(raw_np):
+    import numpy as np
+    result=list()
+    for item in raw_np:
+        result.append(item.argmax())
+    return result
+
 def get_data(case_type, mode='one_hot'):
     """从指定文件中获得待训练数据，数据源文件是txt文件以', '分割
     PARA:
@@ -40,6 +47,7 @@ def get_data(case_type, mode='one_hot'):
 def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 400, drop_out=0.2, valid_rate = 0.2, batch_size =64, epoch=3):
     from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
+    import numpy as np
 
     segmentation = int(len(train_data)*valid_rate)
     valid_data = train_data[:segmentation]
@@ -75,6 +83,9 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
               batch_size=batch_size, epochs=epoch)
     model.save('text_cnn.h5')
     accuracy = model.evaluate(test_data, test_label)
+    result=model.predict(test_data)
+    np.savetxt('result.txt',set_one_hot(result))
+    np.savetxt('true_data.txt',set_one_hot(test_label))
     print(accuracy)
     date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
