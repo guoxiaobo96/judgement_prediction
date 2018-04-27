@@ -71,7 +71,7 @@ def xls2txt(case_name):
 
 def xls2csv(case_name):
     """this part is used to change the date from xls version to csv version"""
-    classification_number_count=[None for i in range(50)]
+    classification_number_count=[0 for i in range(50)]
     source_foldname = 'D:/案件数据/'+case_name
     source_file_list = os.listdir(source_foldname)
     target_filename= 'D:/judgement_prediction/judgement_prediction/'+case_name+'/data.txt'
@@ -102,7 +102,7 @@ def xls2csv(case_name):
                    '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
             for i in range(len(delete_list)):
                 content = content.replace(delete_list[i], '')
-            data = data+content+","+label[0:1]+'\n'
+            data = data+content+","+label
     data = " ".join(jieba.cut(data))
     with open(file=target_filename, mode="a",encoding='utf-8') as target_file:
         target_file.write(data)
@@ -112,8 +112,8 @@ def xls2csv(case_name):
 #    print("long number:%d"%classification_number_count[2])
 #    print("life long number:%d"%classification_number_count[3])
 #    print("death number:%d"%classification_number_count[4])
-    for i in len(classification_number_count):
-        print(classification_number_count[i])
+    for i,eval in enumerate(classification_number_count):
+        print("年份：%s, 案例数：%s"%(i+1,eval))
     return "xls2csv finish"
 
 def getLabel(content):
@@ -158,23 +158,23 @@ def getLabel(content):
             else:
                 return "20\n",20
         else:
-            if content.find("一年")!=-1:
+            if content.find("刑一年")!=-1:
                 return "1\n", 1
-            elif content.find("二年")!=-1:
+            elif content.find("刑二年")!=-1:
                 return "2\n", 2
-            elif content.find("三年")!=-1:
+            elif content.find("刑三年")!=-1:
                 return "3\n", 3
-            elif content.find("四年")!=-1:
+            elif content.find("刑四年")!=-1:
                 return "4\n", 4
-            elif content.find("五年")!=-1:
+            elif content.find("刑五年")!=-1:
                 return "5\n", 5
-            elif content.find("六年")!=-1:
+            elif content.find("刑六年")!=-1:
                 return "6\n", 6
-            elif content.find("七年")!=-1:
+            elif content.find("刑七年")!=-1:
                 return "7\n", 7
-            elif content.find("八年")!=-1:
+            elif content.find("刑八年")!=-1:
                 return "8\n", 8
-            elif content.find("九年")!=-1:
+            elif content.find("刑九年")!=-1:
                 return "9\n", 9
             else:
                 return "10\n",10
