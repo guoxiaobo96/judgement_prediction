@@ -1,5 +1,4 @@
 def set_one_hot(raw_np):
-    import numpy as np
     result=list()
     for item in raw_np:
         result.append(item.argmax())
