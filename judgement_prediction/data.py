@@ -27,6 +27,8 @@ def build_vocab(train_dir, vocab_dir, vocab_size=5000):
 
     all_data = []
     for content in data_train:
+        content=content.replace('   ',' ')
+        content=content.replace(' ','')
         all_data.extend(content)
 
     counter = Counter(all_data)
@@ -94,3 +96,9 @@ def batch_iter(x, y, batch_size=64):
         start_id = i * batch_size
         end_id = min((i + 1) * batch_size, data_len)
         yield x_shuffle[start_id:end_id], y_shuffle[start_id:end_id]
+
+def main():
+    read_vocab('D:/judgement_prediction/judgement_prediction/criminal/vocab.txt')
+
+if __name__=='__main__':
+    main()
