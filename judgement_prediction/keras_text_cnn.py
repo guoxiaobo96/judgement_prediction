@@ -4,7 +4,7 @@ def set_one_hot(raw_np):
         result.append(item.argmax())
     return result
 
-def get_data(case_type, mode='one_hot'):
+def get_data(case_type, mode='one_hot',data_name='data.txt'):
     """从指定文件中获得待训练数据，数据源文件是txt文件以', '分割
     PARA:
     filename：数据源文件
@@ -20,7 +20,7 @@ def get_data(case_type, mode='one_hot'):
     import numpy as np
     print("getting data......")
     columns=['content', 'label']
-    filename='D:/judgement_prediction/judgement_prediction/'+case_type+'/data.txt'
+    filename='D:/judgement_prediction/judgement_prediction/'+case_type+'/'+data_name
     data = pd.read_csv(filename, encoding='utf-8', sep=', ', header=None, names=columns, engine='python')
     data.reindex(np.random.permutation(data.index))
     content = data['content']
@@ -43,7 +43,7 @@ def get_data(case_type, mode='one_hot'):
     print("data getted")
     return train_data, test_data, train_label, test_label, vocab
 
-def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 400, drop_out=0.2, valid_rate = 0.2, batch_size =64, epoch=3):
+def train_model(case_type,train_data, test_data, train_label, test_label,vocab,data_name='data.txt',embedding = 200, max_len = 400, drop_out=0.2, valid_rate = 0.2, batch_size =64, epoch=5):
     from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
 
@@ -79,7 +79,7 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
     model.fit(train_data, train_label,
               validation_data=(valid_data, valid_label),
               batch_size=batch_size, epochs=epoch)
-    model.save('text_cnn.h5')
+    model.save(data_name+'_text_cnn.h5')
     accuracy = model.evaluate(test_data, test_label)
     print(accuracy)
     date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
@@ -89,8 +89,9 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
 
 def main():
     case_type=input("please input case type:")
-    train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
-    train_model(case_type,train_data, test_data, train_label, test_label, vocab)
+    file_name=input("please input file name:")
+    train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence',data_name=file_name)
+    train_model(case_type,train_data, test_data, train_label, test_label, vocab,data_name=file_name,batch_size=64)
 
 if __name__=='__main__':
     main()
