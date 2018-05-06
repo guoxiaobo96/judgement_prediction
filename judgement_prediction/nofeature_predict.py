@@ -74,9 +74,13 @@ def xls2csv(case_name):
     classification_number_count=[0 for i in range(50)]
     source_foldname = 'D:/案件数据/'+case_name
     source_file_list = os.listdir(source_foldname)
-    target_filename= 'D:/judgement_prediction/judgement_prediction/'+case_name+'/data.txt'
+    target_filename= 'D:/judgement_prediction/judgement_prediction/'+case_name+'/'
     
-    data=str()
+    data_imprison=str()
+    data_misdemeanor=str()
+    data_felony=str()
+    data_life_long=str()
+    data_death=str()
     case_number = 0
 
     for source_filename in source_file_list:
@@ -102,18 +106,31 @@ def xls2csv(case_name):
                    '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
             for i in range(len(delete_list)):
                 content = content.replace(delete_list[i], '')
-            data = data+content+","+label
-    data = " ".join(jieba.cut(data))
-    with open(file=target_filename, mode="a",encoding='utf-8') as target_file:
-        target_file.write(data)
-#    print("case number:%d"%case_number)
-#    print("temp number:%d"%classification_number_count[0])
-#    print("short number:%d"%classification_number_count[1])
-#    print("long number:%d"%classification_number_count[2])
-#    print("life long number:%d"%classification_number_count[3])
-#    print("death number:%d"%classification_number_count[4])
-    for i,eval in enumerate(classification_number_count):
-        print("年份：%s, 案例数：%s"%(i+1,eval))
+            if int(label)==0:
+                data_imprison = data_imprison+content+","+label
+            elif int(label)>0 and int(label)<10:
+                data_misdemeanor= data_misdemeanor+content+","+label
+            elif int(label)>=10 and int(label)<30:
+                data_felony= data_felony+content+","+label
+            elif int(label)==30:
+                data_life_long=data_life_long+content+','+label
+            else:
+                data_death=data_death+content+','+label
+    data_imprison= " ".join(jieba.cut(data_imprison))
+    data_misdemeanor= " ".join(jieba.cut(data_misdemeanor))
+    data_death = " ".join(jieba.cut(data_death))
+    data_felony= " ".join(jieba.cut(data_felony))
+    data_life_long=" ".join(jieba.cut(data_life_long))
+    with open(file=target_filename+'imprison.txt', mode="w",encoding='utf-8') as target_file:
+        target_file.write(data_imprison)
+    with open(file=target_filename+'misdemeanor.txt', mode="w",encoding='utf-8') as target_file:
+        target_file.write(data_misdemeanor)
+    with open(file=target_filename+'felony.txt', mode="w",encoding='utf-8') as target_file:
+        target_file.write(data_felony)
+    with open(file=target_filename+'life.txt', mode="w",encoding='utf-8') as target_file:
+        target_file.write(data_life_long)
+    with open(file=target_filename+'death.txt', mode="w",encoding='utf-8') as target_file:
+        target_file.write(data_death)
     return "xls2csv finish"
 
 def getLabel(content):
