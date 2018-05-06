@@ -46,7 +46,6 @@ def get_data(case_type, mode='one_hot'):
 def train_model(case_type,train_data, test_data, train_label, test_label, vocab,embedding = 200, max_len = 400, drop_out=0.2, valid_rate = 0.2, batch_size =64, epoch=3):
     from keras.layers import Dense, Input, Convolution1D, MaxPool1D, Dropout, concatenate, Flatten, Embedding
     from keras.models import Model
-    import numpy as np
 
     segmentation = int(len(train_data)*valid_rate)
     valid_data = train_data[:segmentation]
@@ -73,7 +72,7 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
     main_output = Dense(len(train_label[1]), activation='softmax')(drop)
     model = Model(inputs = main_input, outputs = main_output)
 
-    model.compile(loss='binary_crossentropy',
+    model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
               metrics=['acc'])
 
@@ -82,9 +81,6 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
               batch_size=batch_size, epochs=epoch)
     model.save('text_cnn.h5')
     accuracy = model.evaluate(test_data, test_label)
-    result=model.predict(test_data)
-    np.savetxt('result.txt',set_one_hot(result))
-    np.savetxt('true_data.txt',set_one_hot(test_label))
     print(accuracy)
     date = 'textcnn model, embedding = '+ str(embedding)+', max_len='+str(max_len)+', drop_out='+str(drop_out)+', valid_rate='+str(valid_rate)+', batch_size'+str(batch_size)+', epoch='+str(epoch)+', accuracy='+ str(accuracy[1])+'\n'
     with open(file='D:/judgement_prediction/judgement_prediction/'+case_type+'/information.txt', mode="a",encoding='utf-8') as target_file:
