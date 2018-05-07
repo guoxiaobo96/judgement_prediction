@@ -1,0 +1,11 @@
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9803102521875942
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.978390888177353
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9789001089091985
+criminal_year0.9803102521875942 0.978390888177353 0.9789001089091985 ,average:0.9792004164247152
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9792395858233695
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9787695433394046
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9794746068100858
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9794093199409305
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.9801274520171531
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.44271948608137046
+textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=5, accuracy=0.5074946466809421
