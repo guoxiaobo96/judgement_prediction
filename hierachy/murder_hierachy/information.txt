@@ -1,5 +1,0 @@
-textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.4962825278810409
-textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=5, accuracy=0.5483271382112043
-textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size128, epoch=5, accuracy=0.529739776286937
-textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size128, epoch=5, accuracy=0.23010752704194798
-textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=5, accuracy=0.2666666671153038
