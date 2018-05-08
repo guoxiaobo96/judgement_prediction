@@ -15,6 +15,13 @@ def xls2txt(case_name,data_type,char_split=True):
         source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
         sheet = source_file.sheet_by_index(0)
         content = str()
+        data=str()
+        data_imprison=str()
+        data_misdemeanor=str()
+        data_felony=str()
+        data_life_long=str()
+        data_death=str()
+
         for _ in range(1, sheet.nrows):
             content = sheet.cell(_, 13).value
             position = content.find("本院认为")
@@ -31,32 +38,16 @@ def xls2txt(case_name,data_type,char_split=True):
             for i in range(len(delete_list)):
                     content = content.replace(delete_list[i], '')
             if data_type==0:
-                data=str()
                 label, classification_number = getFirstLabel(temp_label)
                 classification_number_count[classification_number]+=1
                 data=data+content+','+label
-                if char_split==True:
-                    data= " ".join(jieba.cut(data))
-                data=data.replace(' ','')
-                with open(file=target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data)
             
             elif data_type==1:
-                data=str()
                 label, classification_number = getSecondLabel(temp_label)
                 classification_number_count[classification_number]+=1
                 data=data+content+','+label
-                if char_split==True:
-                    data= " ".join(jieba.cut(data))
-                with open(file=target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data)
 
             elif data_type==2:
-                data_imprison=str()
-                data_misdemeanor=str()
-                data_felony=str()
-                data_life_long=str()
-                data_death=str()
                 label, classification_number = getSecondLabel(temp_label)
                 classification_number_count[classification_number]+=1
                 if int(label)==0:
@@ -69,22 +60,38 @@ def xls2txt(case_name,data_type,char_split=True):
                     data_life_long=data_life_long+content+','+label
                 else:
                     data_death=data_death+content+','+label
-                if char_split==True:
-                    data_imprison= " ".join(jieba.cut(data_imprison))
-                    data_misdemeanor= " ".join(jieba.cut(data_misdemeanor))
-                    data_death = " ".join(jieba.cut(data_death))
-                    data_felony= " ".join(jieba.cut(data_felony))
-                    data_life_long=" ".join(jieba.cut(data_life_long))
-                with open(file=target_filename+'imprison.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(data_imprison)
-                with open(file=target_filename+'misdemeanor.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(data_misdemeanor)
-                with open(file=target_filename+'felony.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(data_felony)
-                with open(file=target_filename+'life.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(data_life_long)
-                with open(file=target_filename+'death.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(data_death)
+            
+        if data_type==0 or data_type==1:
+            if char_split==True:
+                data= " ".join(jieba.cut(data))
+                data=data.replace('  ',' ')
+            with open(file=target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data)
+            
+        elif data_type==2:
+            if char_split==True:
+                data_imprison= " ".join(jieba.cut(data_imprison))
+                data_imprison=data_imprison.replace('  ',' ')
+                data_misdemeanor= " ".join(jieba.cut(data_misdemeanor))
+                data_misdemeanor=data_misdemeanor.replace('  ',' ')
+                data_death = " ".join(jieba.cut(data_death))
+                data_death=data_death.replace('  ',' ')
+                data_felony= " ".join(jieba.cut(data_felony))
+                data_felony=data_felony.replace('  ',' ')
+                data_life_long=" ".join(jieba.cut(data_life_long))
+                data_life_long=data_life_long.replace('  ',' ')
+
+            with open(file=target_filename+'imprison.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_imprison)
+            with open(file=target_filename+'misdemeanor.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_misdemeanor)
+            with open(file=target_filename+'felony.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_felony)
+            with open(file=target_filename+'life.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_life_long)
+            with open(file=target_filename+'death.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_death)
+
     return "xls2txt finish"
 
 def getSecondLabel(content):
