@@ -1,4 +1,4 @@
-class readDate():
+class KearsReadDate():
 
     def __init__(self,case_type,data_name):
         self.case_type=case_type
@@ -40,3 +40,45 @@ class readDate():
     
     def process_data(self,mode,MAX_LEN):
         return self.__split_data(mode,MAX_LEN)
+
+class VocabProcess():
+    def __init__(self):
+        pass
+
+    def build_vocab(self,train_data,vocab_dir,vocab_size):
+        from collections import Counter
+        contents,labels,all_data=[],[],[]
+        with open(train_data,'r') as f:
+            for line in f:
+                try:
+                    content, label=line.strip().split(',')
+                    if content:
+                        contents.append(content)
+                        labels.append(label)
+                except:
+                    pass
+        
+        contents=content.replace(' ','')
+        for content in contents:
+            all_data.extend(content)
+        
+        counter = Counter(all_data)
+        count_pairs = counter.most_common(vocab_size-1)
+        words, _ = list(zip(*count_pairs))
+        # 添加一个 <PAD> 来将所有文本pad为同一长度
+        words = ['<PAD>'] + list(words)
+        with open(vocab_dir,mode='w') as f:
+            f.write('\n'.join(words) + '\n')
+
+    def read_vocab(self,vocab_dir):
+        with open(vocab_dir,mode='r') as fp:
+        # 如果是py2 则每个值都转化为unicode
+            words = [_.strip() for _ in fp.readlines()]
+            word_to_id = dict(zip(words, range(len(words))))
+        return words, word_to_id
+
+def main():
+    pass
+
+if __name__=='__main__':
+    main()
