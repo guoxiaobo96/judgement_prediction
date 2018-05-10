@@ -177,20 +177,24 @@ class DealRawData():
         else:
             return "4\n", 4
 
+def read_data(file_name):
+    contents,labels=[],[]
+    with open(file=file_name,mode='r',encoding='utf8') as f:
+        for line in f:
+            try:
+                content, label=line.strip().split(',')
+                if content:
+                    content=content.replace(' ','')
+                    contents.append(content)
+                    labels.append(label)
+            except:
+                    pass
+    return contents, labels
+
 def build_vocab(train_data,vocab_dir,vocab_size):
         from collections import Counter
-        contents,labels,all_data=[],[],[]
-        with open(train_data,'r',encoding='utf8') as f:
-            for line in f:
-                try:
-                    content, label=line.strip().split(',')
-                    if content:
-                        content=content.replace(' ','')
-                        contents.append(content)
-                        labels.append(label)
-                except:
-                    pass
-        
+        contents,_=read_data(train_data)
+        all_data=[]
         for content in contents:
             all_data.extend(content)
         
@@ -208,26 +212,38 @@ def read_vocab(vocab_dir):
         word_to_id = dict(zip(words, range(len(words))))
     return words, word_to_id
 
-def batch_iter(data, batch_size, num_epochs, shuffle=True):
+def batch_iter(x,y, batch_size, shuffle=True):
     """
     Generates a batch iterator for a dataset.
     """
     import numpy as np
-    data = np.array(data)
-    data_size = len(data)
-    num_batches_per_epoch = int((len(data)-1)/batch_size) + 1
-    for _ in range(num_epochs):
-        # Shuffle the data at each epoch
-        if shuffle:
-            shuffle_indices = np.random.permutation(np.arange(data_size))
-            shuffled_data = data[shuffle_indices]
-        else:
-            shuffled_data = data
-        for batch_num in range(num_batches_per_epoch):
-            start_index = batch_num * batch_size
-            end_index = min((batch_num + 1) * batch_size, data_size)
-            yield shuffled_data[start_index:end_index]
+    data_size = len(x)
+    num_batches_per_epoch = int((data_size-1)/batch_size) + 1
+    # Shuffle the data at each epoch
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        x_shuffle = x[shuffle_indices]
+        y_shuffle = y[shuffle_indices]
+    else:
+        x_shuffle=x
+        y_shuffle=y
+    for batch_num in range(num_batches_per_epoch):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        yield x_shuffle[start_index:end_index],y_shuffle[start_index:end_index]
 
+def precess_file(file_name, word_to_id, cat_to_id,max_length=600):
+    import keras
+    contents,labels=read_data(file_name)
+    data_id, label_id=[],[]
+    for i in range(len(contents)):
+        data_id.append([word_to_id[x]for x in contents[i] if i in word_to_id])
+        label_id.append(labels[i])
+    x_pad=keras.preprocessing.sequence.pad_sequences(data_id,max_length)
+    y_pad=keras.utils.to_categorical(label_id)
+
+    return x_pad,y_pad
+    
 def main():
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
