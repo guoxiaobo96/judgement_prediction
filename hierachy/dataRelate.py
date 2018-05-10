@@ -41,45 +41,8 @@ class KearsReadDate():
     def process_data(self,mode,MAX_LEN):
         return self.__split_data(mode,MAX_LEN)
 
-class VocabProcess():
-    def __init__(self):
-        pass
-
-    def build_vocab(self,train_data,vocab_dir,vocab_size):
-        from collections import Counter
-        contents,labels,all_data=[],[],[]
-        with open(train_data,'r',encoding='utf8') as f:
-            for line in f:
-                try:
-                    content, label=line.strip().split(',')
-                    if content:
-                        content=content.replace(' ','')
-                        contents.append(content)
-                        labels.append(label)
-                except:
-                    pass
-        
-        for content in contents:
-            all_data.extend(content)
-        
-        counter = Counter(all_data)
-        count_pairs = counter.most_common(vocab_size-1)
-        words, _ = list(zip(*count_pairs))
-        # 添加一个 <PAD> 来将所有文本pad为同一长度
-        words = ['<PAD>'] + list(words)
-        with open(vocab_dir,mode='w',encoding='utf8') as f:
-            f.write('\n'.join(words) + '\n')
-
-    def read_vocab(self,vocab_dir):
-        with open(vocab_dir,mode='r',encoding='utf8') as fp:
-            words = [_.strip() for _ in fp.readlines()]
-            word_to_id = dict(zip(words, range(len(words))))
-        return words, word_to_id
-
 def main():
-    voacb=VocabProcess()
-#    voacb.build_vocab(train_data='D:\\judgement_prediction\\hierachy\\criminal\\data.txt',vocab_dir='D:\\judgement_prediction\\hierachy\\criminal\\vocab.txt',vocab_size=5000)
-    voacb.read_vocab('D:\\judgement_prediction\\hierachy\\criminal\\vocab.txt')
+    pass
 
 if __name__=='__main__':
     main()
