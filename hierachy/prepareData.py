@@ -243,7 +243,10 @@ def precess_file(file_name, word_to_id, cat_to_id,max_length=600):
     y_pad=keras.utils.to_categorical(label_id)
 
     return x_pad,y_pad
-    
+
+def to_words(content,words):
+    return ' '.join(words[x] for x in content)
+
 def main():
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
