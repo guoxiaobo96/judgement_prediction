@@ -138,10 +138,10 @@ class TextCnn(object):
 
     def __train(self):
         self.global_step=tf.Variable(0,trainable=False)
-        optimizer=tf.train.AdamOptimizer(self.learning_rate)
+        self.optimizer=tf.train.AdamOptimizer(self.learning_rate)
         extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(extra_update_ops):
-            self.train_op = optimizer.minimize(self.loss, global_step=self.global_step)
+            self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
     
     def build_graph(self):
         self.__add_placeholders()

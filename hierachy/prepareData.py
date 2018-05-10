@@ -232,7 +232,7 @@ def batch_iter(x,y, batch_size, shuffle=True):
         end_index = min((batch_num + 1) * batch_size, data_size)
         yield x_shuffle[start_index:end_index],y_shuffle[start_index:end_index]
 
-def precess_file(file_name, word_to_id, cat_to_id,max_length=600):
+def process_file(file_name, word_to_id, cat_to_id,max_length=600):
     import keras
     contents,labels=read_data(file_name)
     data_id, label_id=[],[]
@@ -247,6 +247,11 @@ def precess_file(file_name, word_to_id, cat_to_id,max_length=600):
 def to_words(content,words):
     return ' '.join(words[x] for x in content)
 
+def read_catagory():
+    catagories=[]
+    catagories=[x for x in catagories]
+    cat_to_id=dict(zip(catagories,range(len(catagories))))
+    return catagories,cat_to_id
 def main():
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
