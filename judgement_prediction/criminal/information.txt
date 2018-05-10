@@ -21,3 +21,5 @@ textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch
 criminal0.8558886557881276 0.8672376915780584 0.8668094274829236 ,average:0.8633119249497031
 textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.8540685270021509
 textcnn model, embedding = 200, max_len=400, drop_out=0.2, valid_rate=0.2, batch_size64, epoch=3, accuracy=0.6927194860813705
+lstm model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=2, accuracy=0.5926124198278472
+lstm model, embedding = 200, max_len=200, drop_out=0.3, valid_rate=0.2, batch_size64, epoch=5, accuracy=0.5802997858672377

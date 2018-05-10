@@ -53,7 +53,7 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
     model.add(Embedding(len(vocab) + 1, embedding, input_length=max_len))
     model.add(LSTM(200, dropout=0.2, recurrent_dropout=0.2))
     model.add(Dropout(0.2))
-    model.add(Dense(5, activation='softmax'))
+    model.add(Dense(len(test_label[0]), activation='softmax'))
     model.summary()
 
     model.compile(loss='categorical_crossentropy',
@@ -75,7 +75,7 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
 def main():
     case_type=input("please input case type:")
     train_data, test_data, train_label, test_label, vocab = get_data(case_type,mode='sequence')
-    train_model(case_type,train_data, test_data, train_label, test_label, vocab)
+    train_model(case_type,train_data, test_data, train_label, test_label, vocab,epoch=5)
 
 if __name__=='__main__':
     main()
