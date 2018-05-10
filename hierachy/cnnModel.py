@@ -87,10 +87,11 @@ class TextCnn(object):
         # number of filters
         self.num_filters = config['num_filters']
         self.learning_rate=config['learning_rate']
+        self.build_graph()
     
     def __add_placeholders(self):
-        self.x=tf.placeholder('int32',[None,self.sentence_length])
-        self.y=tf.placeholder('int32',[None,])
+        self.x=tf.placeholder('int32',[None,self.sentence_length],name='input_x')
+        self.y=tf.placeholder('int32',[None,],name='input_y')
     
     def __inference(self):
         with tf.variable_scope('embedding layer'):
