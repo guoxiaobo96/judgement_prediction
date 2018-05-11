@@ -127,12 +127,6 @@ class TextCnn(object):
         self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
     
-    def __add_metric(self):
-        self.y_pred=self.y_prob[:,1]>0.5
-        self.precision, self.precision_op = tf.metrics.precision(self.y, self.y_pred)
-        self.recall, self.recall_op = tf.metrics.recall(self.y, self.y_pred)
-        tf.summary.scalar('precision', self.precision)
-        tf.summary.scalar('recall', self.recall)
 
     def __train(self):
         self.global_step=tf.Variable(0,trainable=False)
@@ -140,6 +134,13 @@ class TextCnn(object):
         extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
         with tf.control_dependencies(extra_update_ops):
             self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
+
+    def __add_metric(self):
+        self.y_pred=self.y_prob[:,1]>0.5
+        self.precision, self.precision_op = tf.metrics.precision(self.y, self.y_pred)
+        self.recall, self.recall_op = tf.metrics.recall(self.y, self.y_pred)
+        tf.summary.scalar('precision', self.precision)
+        tf.summary.scalar('recall', self.recall)
     
     def build_graph(self):
         self.__add_placeholders()
