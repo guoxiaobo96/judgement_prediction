@@ -102,12 +102,12 @@ class TextCnn(object):
         with tf.variable_scope('convolution_pooling_layer'):
             pooled_outputs=[]
             for i,filter_size in enumerate(self.filter_sizes):
-                filter_shape=[filter_size,self.sentence_length-filter_size+1,1,1]
+                filter_shape=[filter_size,self.embedding_size,1,1]
                 W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
                 b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.zeros_initializer())
                 conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
                 h=tf.nn.relu(tf.add(conv,b))
-                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
+                pooled=tf.nn.max_pool(h,ksize=[1,self.embedding_size,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,3)
