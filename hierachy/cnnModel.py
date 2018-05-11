@@ -120,10 +120,10 @@ class TextCnn(object):
             w=tf.get_variable('W',shape=[self.feature_length,self.num_classes],initializer=tf.contrib.layers.xavier_initializer())
             b=tf.get_variable('b',shape=[self.num_classes],initializer=tf.constant_initializer(0.1))
             self.y_out=tf.matmul(self.features,w)+b
-            self.y_prob=tf.nn.softmax(self.y_out)
+#            self.y_prob=tf.nn.softmax(self.y_out)
     
     def __add_metric(self):
-        self.y_pred=self.y_prob[:,1]>0.5
+        self.y_pred=tf.argmax(self.y_out,1)
         self.precision, self.precision_op = tf.metrics.precision(self.y, self.y_pred)
         self.recall, self.recall_op = tf.metrics.recall(self.y, self.y_pred)
         tf.summary.scalar('precision', self.precision)
