@@ -232,18 +232,34 @@ def batch_iter(x,y, batch_size, shuffle=True):
         end_index = min((batch_num + 1) * batch_size, data_size)
         yield x_shuffle[start_index:end_index],y_shuffle[start_index:end_index]
 
-def process_file(file_name, word_to_id, cat_to_id,max_length=600):
+def process_data(file_name, word_to_id, cat_to_id,max_length=600):
     import keras
+    import random
     contents,labels=read_data(file_name)
-    data_id, label_id=[],[]
+    data_id, label_id,all_data=[],[],[]
+    for i in range(len(contents)):
+        all_data.append(contents[i]+','+labels[i])
+    random.shuffle(all_data)
+    contents,labels=[],[]
+    for data in enumerate(all_data):
+        contents=data.strip().split(',')
     for i in range(len(contents)):
         data_id.append([word_to_id[x]for x in contents[i] if i in word_to_id])
         label_id.append(labels[i])
     x_pad=keras.preprocessing.sequence.pad_sequences(data_id,max_length)
     y_pad=keras.utils.to_categorical(label_id)
 
-    return x_pad,y_pad
+    return x_pad,y_pad,len(all_data)
 
+def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0.2):
+    x_data,y_data,data_size=process_data(data_dir, word_to_id, cat_to_id, seq_length)
+    x_train=x_data[:train_rate*data_size]
+    y_train=y_data[:train_rate*data_size]
+    x_val=x_data[train_rate*data_size+1:(1-test_rate)*data_size]
+    y_val=y_data[train_rate*data_size+1:(1-test_rate)*data_size]
+    x_test=x_data[(1-test_rate)*data_size+1:]
+    y_test=y_data[(1-test_rate)*data_size+1:]
+    return x_train,y_train,x_val,y_val,x_test,y_test
 def to_words(content,words):
     return ' '.join(words[x] for x in content)
 

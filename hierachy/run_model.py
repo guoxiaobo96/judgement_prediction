@@ -13,16 +13,21 @@ import tensorflow as tf
 from sklearn import metrics
 
 from cnnModel import TCNNConfig,TextCnn
-from prepareData import read_vocab,  batch_iter, process_file, build_vocab,read_catagory
+from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
-base_dir = 'data/cnews'
-train_dir = os.path.join(base_dir, 'cnews.train.txt')
-test_dir = os.path.join(base_dir, 'cnews.test.txt')
-val_dir = os.path.join(base_dir, 'cnews.val.txt')
-vocab_dir = os.path.join(base_dir, 'cnews.vocab.txt')
+base_dir = 'criminal'
+data_dir=os.path.join(base_dir,'data.txt')
+#train_dir = os.path.join(base_dir, 'cnews.train.txt')
+#test_dir = os.path.join(base_dir, 'cnews.test.txt')
+#val_dir = os.path.join(base_dir, 'cnews.val.txt')
+vocab_dir = os.path.join(base_dir, 'vocab.txt')
 
 save_dir = 'checkpoints/textcnn'
 save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
+train_rate=0.6
+valid_rate=0.2
+test_rate=0.2
+
 
 
 def get_time_dif(start_time):
@@ -57,7 +62,7 @@ def evaluate(sess, x_, y_):
     return total_loss / data_len, total_acc / data_len
 
 
-def train():
+def train(x_train,y_train,x_val,y_val):
     print("Configuring TensorBoard and Saver...")
     # 配置 Tensorboard，重新训练时，请将tensorboard文件夹删除，不然图会覆盖
     tensorboard_dir = 'tensorboard/textcnn'
@@ -77,10 +82,6 @@ def train():
     print("Loading training and validation data...")
     # 载入训练集与验证集
     start_time = time.time()
-    x_train, y_train = process_file(train_dir, word_to_id, cat_to_id, config.seq_length)
-    x_val, y_val = process_file(val_dir, word_to_id, cat_to_id, config.seq_length)
-    time_dif = get_time_dif(start_time)
-    print("Time usage:", time_dif)
 
     # 创建session
     session = tf.Session()
@@ -138,10 +139,9 @@ def train():
             break
 
 
-def test():
+def test(x_test,y_test):
     print("Loading test data...")
     start_time = time.time()
-    x_test, y_test = process_file(test_dir, word_to_id, cat_to_id, config.seq_length)
 
     session = tf.Session()
     session.run(tf.global_variables_initializer())
@@ -188,13 +188,14 @@ if __name__ == '__main__':
     print('Configuring CNN model...')
     config = TCNNConfig()
     if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
-        build_vocab(train_dir, vocab_dir, config.vocab_size)
+        build_vocab(data_dir, vocab_dir, config.vocab_size)
     categories, cat_to_id = read_catagory()
     words, word_to_id = read_vocab(vocab_dir)
     config.vocab_size = len(words)
+    x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
     model = TextCnn(config)
 
     if sys.argv[1] == 'train':
-        train()
+        train(x_train,y_train,x_val,y_val)
     else:
-        test()
+        test(x_test,y_test)
