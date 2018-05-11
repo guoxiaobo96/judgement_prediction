@@ -122,6 +122,13 @@ class TextCnn(object):
             self.y_out=tf.matmul(self.features,w)+b
             self.y_prob=tf.nn.softmax(self.y_out)
     
+    def __add_metric(self):
+        self.y_pred=self.y_prob[:,1]>0.5
+        self.precision, self.precision_op = tf.metrics.precision(self.y, self.y_pred)
+        self.recall, self.recall_op = tf.metrics.recall(self.y, self.y_pred)
+        tf.summary.scalar('precision', self.precision)
+        tf.summary.scalar('recall', self.recall)
+
     def __add_loss(self):
         loss=tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y,logits=self.y_pred)
         self.loss=tf.reduce_mean(loss)
@@ -135,16 +142,10 @@ class TextCnn(object):
         with tf.control_dependencies(extra_update_ops):
             self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
 
-    def __add_metric(self):
-        self.y_pred=self.y_prob[:,1]>0.5
-        self.precision, self.precision_op = tf.metrics.precision(self.y, self.y_pred)
-        self.recall, self.recall_op = tf.metrics.recall(self.y, self.y_pred)
-        tf.summary.scalar('precision', self.precision)
-        tf.summary.scalar('recall', self.recall)
     
     def build_graph(self):
         self.__add_placeholders()
         self.__inference()
-        self.__add_loss()
         self.__add_metric()
+        self.__add_loss()
         self.__train()
