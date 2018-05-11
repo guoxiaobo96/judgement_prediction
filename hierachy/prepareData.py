@@ -255,12 +255,12 @@ def process_data(file_name, word_to_id, cat_to_id,max_length=600):
 
 def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0.2):
     x_data,y_data,data_size=process_data(data_dir, word_to_id, cat_to_id, seq_length)
-    x_train=x_data[:train_rate*data_size]
-    y_train=y_data[:train_rate*data_size]
-    x_val=x_data[train_rate*data_size+1:(1-test_rate)*data_size]
-    y_val=y_data[train_rate*data_size+1:(1-test_rate)*data_size]
-    x_test=x_data[(1-test_rate)*data_size+1:]
-    y_test=y_data[(1-test_rate)*data_size+1:]
+    x_train=x_data[:int(train_rate*data_size)]
+    y_train=y_data[:int(train_rate*data_size)]
+    x_val=x_data[int(train_rate*data_size)+1:int((1-test_rate)*data_size)]
+    y_val=y_data[int(train_rate*data_size)+1:int((1-test_rate)*data_size)]
+    x_test=x_data[int((1-test_rate)*data_size)+1:]
+    y_test=y_data[int((1-test_rate)*data_size)+1:]
     return x_train,y_train,x_val,y_val,x_test,y_test
 def to_words(content,words):
     return ' '.join(words[x] for x in content)

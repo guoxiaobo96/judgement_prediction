@@ -7,7 +7,7 @@ class TCNNConfig(object):
 
     embedding_size = 64  # 词向量维度
     seq_length = 600  # 序列长度
-    num_classes = 10  # 类别数
+    num_classes = 5  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表达小
@@ -73,20 +73,20 @@ class CharLevelCNN(object):
 
 class TextCnn(object):
     def __init__(self,config):  
-        self.batch_size = config['batch_size']
+        self.batch_size = config.batch_size
         # 词典的大小
-        self.vocab_size = config['vocab_size']
-        self.num_classes = config['num_classes']
-        self.keep_prob = config['keep_prob']
+        self.vocab_size = config.vocab_size
+        self.num_classes = config.num_classes
+        self.keep_prob = config.keep_prob
         # length of word embedding
-        self.embedding_size = config['embedding_size']
+        self.embedding_size = config.embedding_size
         # seting filter sizes, type of list
-        self.filter_sizes = config['filter_sizes']
+        self.filter_sizes = config.filter_size
         # max length of sentence
-        self.sentence_length = config['seq_length']
+        self.sentence_length = config.seq_length
         # number of filters
-        self.num_filters = config['num_filters']
-        self.learning_rate=config['learning_rate']
+        self.num_filters = config.num_filters
+        self.learning_rate=config.learning_rate
         self.build_graph()
     
     def __add_placeholders(self):
@@ -94,7 +94,7 @@ class TextCnn(object):
         self.y=tf.placeholder('int32',[None,],name='input_y')
     
     def __inference(self):
-        with tf.variable_scope('embedding layer'):
+        with tf.variable_scope('embedding_layer'):
             with open('/embedding_matrix,pkl','rb') as embedding_file:
                 embedding_weights=pickle.load(embedding_file)
             self.W=tf.Variable(embedding_weights,trainable=True,name='embedding_weights',dtype='float32')
