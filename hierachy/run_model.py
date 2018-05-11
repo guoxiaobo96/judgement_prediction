@@ -182,8 +182,8 @@ def test(x_test,y_test):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2 or sys.argv[1] not in ['train', 'test']:
-        raise ValueError("""usage: python run_cnn.py [train / test]""")
+#    if len(sys.argv) != 2 or sys.argv[1] not in ['train', 'test']:
+#        raise ValueError("""usage: python run_cnn.py [train / test]""")
 
     print('Configuring CNN model...')
     config = TCNNConfig()
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
     model = TextCnn(config)
 
-    if sys.argv[1] == 'train':
-        train(x_train,y_train,x_val,y_val)
-    else:
-        test(x_test,y_test)
+#    if sys.argv[1] == 'train':
+    train(x_train,y_train,x_val,y_val)
+#    else:
+#        test(x_test,y_test)
