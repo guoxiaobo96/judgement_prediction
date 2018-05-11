@@ -95,7 +95,7 @@ class TextCnn(object):
     
     def __inference(self):
         with tf.variable_scope('embedding_layer'):
-            self.W=tf.Variable(tf.random_uniform([self.vocab_size,self.embedding_size]-1.0,-1.0,)name='embedding_weights',dtype='float32')
+            self.W=tf.Variable(tf.random_uniform([self.vocab_size,self.embedding_size],-1.0,-1.0,),name='embedding_weights',dtype='float32')
             self.embedding_chars=tf.nn.embedding_lookup(self.W,self.x)
             self.embedding_chars_expend=tf.expand_dims(self.embedding_chars,-1)
 
