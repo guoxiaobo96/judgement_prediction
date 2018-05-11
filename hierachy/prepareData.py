@@ -244,7 +244,7 @@ def process_data(file_name, word_to_id, cat_to_id,max_length=600):
     for data in enumerate(all_data):
         contents=data.strip().split(',')
     for i in range(len(contents)):
-        data_id.append([word_to_id[x]for x in contents[i] if i in word_to_id])
+        data_id.append([word_to_id[x]for x in contents[i] if x in word_to_id])
         label_id.append(labels[i])
     x_pad=keras.preprocessing.sequence.pad_sequences(data_id,max_length)
     y_pad=keras.utils.to_categorical(label_id)
