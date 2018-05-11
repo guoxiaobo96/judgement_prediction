@@ -111,7 +111,7 @@ class TextCnn(object):
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,3)
-            self.h_pool_flat=tf.reshape(self.h_pool,-1,self.feature_length)
+            self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])
         
         with tf.variable_scope('drop_out_layer'):
             self.features=tf.nn.dropout(self.h_pool_flat,self.keep_prob)
