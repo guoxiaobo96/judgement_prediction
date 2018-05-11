@@ -107,7 +107,7 @@ class TextCnn(object):
                 b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.zeros_initializer())
                 conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
                 h=tf.nn.relu(tf.add(conv,b))
-                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-self.filter_sizes+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
+                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,3)
