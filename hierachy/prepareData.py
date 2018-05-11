@@ -241,8 +241,10 @@ def process_data(file_name, word_to_id, cat_to_id,max_length=600):
         all_data.append(contents[i]+','+labels[i])
     random.shuffle(all_data)
     contents,labels=[],[]
-    for data in enumerate(all_data):
-        contents=data.strip().split(',')
+    for _,data in enumerate(all_data):
+        content,label=str(data).strip().split(',')
+        contents.append(content)
+        labels.append(label)
     for i in range(len(contents)):
         data_id.append([word_to_id[x]for x in contents[i] if i in word_to_id])
         label_id.append(labels[i])
