@@ -130,7 +130,7 @@ class TextCnn(object):
         tf.summary.scalar('recall', self.recall)
 
     def __add_loss(self):
-        loss=tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.y,logits=self.y_pred)
+        loss=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.y_pred,labels=self.y)
         self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
     
