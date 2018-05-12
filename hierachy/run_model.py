@@ -171,7 +171,7 @@ def test(x_test,y_test):
 
     # 评估
     print("Precision, Recall and F1-Score...")
-    print(metrics.classification_report(y_true=y_test,y_pred=y_pred,target_names=categories))
+#    print(metrics.classification_report(y_true=y_test,y_pred=y_pred,target_names=categories))
 
     # 混淆矩阵
     print("Confusion Matrix...")
@@ -197,6 +197,6 @@ if __name__ == '__main__':
     model = TextCnn(config)
 
 #    if sys.argv[1] == 'train':
-    train(x_train,y_train,x_val,y_val)
+#    train(x_train,y_train,x_val,y_val)
 #    else:
-#        test(x_test,y_test)
+    test(x_test,y_test)
