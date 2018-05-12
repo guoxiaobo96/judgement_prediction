@@ -37,11 +37,11 @@ def get_time_dif(start_time):
     return timedelta(seconds=int(round(time_dif)))
 
 
-def feed_data(x_batch, y_batch, keep_prob):
+def feed_data(x_batch, y_batch,keep_prob):
     feed_dict = {
         model.x: x_batch,
         model.y: y_batch,
-        model.keep_prob: keep_prob
+        model.keep_prob:keep_prob
     }
     return feed_dict
 
@@ -86,6 +86,7 @@ def train(x_train,y_train,x_val,y_val):
     # 创建session
     session = tf.Session()
     session.run(tf.global_variables_initializer())
+    session.run(tf.local_variables_initializer())
     writer.add_graph(session.graph)
 
     print('Training and evaluating...')
@@ -100,7 +101,7 @@ def train(x_train,y_train,x_val,y_val):
         print('Epoch:', epoch + 1)
         batch_train = batch_iter(x_train, y_train, config.batch_size)
         for x_batch, y_batch in batch_train:
-            feed_dict = feed_data(x_batch, y_batch, config.keep_prob)
+            feed_dict = feed_data(x_batch, y_batch,0.5)
 
             if total_batch % config.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar

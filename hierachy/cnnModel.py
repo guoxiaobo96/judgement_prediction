@@ -14,7 +14,6 @@ class TCNNConfig(object):
 
     hidden_dim = 128  # 全连接层神经元
 
-    keep_prob = 0.5  # dropout保留比例
     learning_rate = 1e-3  # 学习率
 
     batch_size = 64  # 每批训练大小
@@ -77,7 +76,6 @@ class TextCnn(object):
         # 词典的大小
         self.vocab_size = config.vocab_size
         self.num_classes = config.num_classes
-        self.keep_prob = config.keep_prob
         # length of word embedding
         self.embedding_size = config.embedding_size
         # seting filter sizes, type of list
@@ -87,11 +85,13 @@ class TextCnn(object):
         # number of filters
         self.num_filters = config.num_filters
         self.learning_rate=config.learning_rate
+        self.num_classes=config.num_classes
         self.build_graph()
     
     def __add_placeholders(self):
         self.x=tf.placeholder('int32',[None,self.sentence_length],name='input_x')
-        self.y=tf.placeholder('int32',[None,],name='input_y')
+        self.y=tf.placeholder('int32',[None,self.num_classes],name='input_y')
+        self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     
     def __inference(self):
         with tf.variable_scope('embedding_layer'):
@@ -124,23 +124,23 @@ class TextCnn(object):
     
     def __add_metric(self):
         self.y_pred=tf.argmax(self.y_out,1)
-        self.precision, self.precision_op = tf.metrics.precision(self.y, self.y_pred)
-        self.recall, self.recall_op = tf.metrics.recall(self.y, self.y_pred)
+        self.precision, self.precision_op = tf.metrics.precision(tf.argmax(self.y,1), self.y_pred)
+        self.recall, self.recall_op = tf.metrics.recall(tf.argmax(self.y,1), self.y_pred)
         tf.summary.scalar('precision', self.precision)
         tf.summary.scalar('recall', self.recall)
 
     def __add_loss(self):
-        loss=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.y_pred,labels=self.y)
+        loss=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.y_out, labels=tf.argmax(self.y,1))
         self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
     
 
     def __train(self):
         self.global_step=tf.Variable(0,trainable=False)
-        self.optimizer=tf.train.AdamOptimizer(self.learning_rate)
-        extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.control_dependencies(extra_update_ops):
-            self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
+        self.optimizer=tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
+#        extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+#        with tf.control_dependencies(extra_update_ops):
+#            self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
 
     
     def build_graph(self):
