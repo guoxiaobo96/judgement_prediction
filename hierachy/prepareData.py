@@ -1,26 +1,29 @@
 class DealRawData():
     def __init__(self,case_name):
         self.case_name=case_name
+        self.data_list=list()
+        self.target_filename= 'D:/judgement_prediction/hierachy/'+self.case_name+'/'
+        self.classification_number=5
+        for _ in range(self.classification_number):
+                self.data_list.append('')
+        
 
-    def xls2txt(self,data_type,char_split=True):
+    def xls2txt(self,data_type,char_split=False):
+        import numpy as np
         import jieba
         import os
         import xlrd
         """this part is used to change the date from xls version to txt version
         PARA:
         data_type:如果为0则将案件结果简单分为缓刑、轻型、重型、无期和死刑，且放在同一文件中，如果为1则具体到年，但是放在同一文件中，如果为2则具体到年但是根据量刑的轻重放在不同文件中"""
-        classification_number_count=[0 for i in range(50)]
+        classification_number_count=[0 for i in range(self.classification_number)]
         source_foldname = 'D:/案件数据/'+self.case_name
         source_file_list = os.listdir(source_foldname)
-        target_filename= 'D:/judgement_prediction/hierachy/'+self.case_name+'/'
 
         for source_filename in source_file_list:
             source_filename = source_foldname+"/"+source_filename
             source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
             sheet = source_file.sheet_by_index(0)
-            data_list=[]
-            for i in range(100):
-                data_list.append('')
             content = str()
             data=str()
             data_imprison=str()
@@ -47,7 +50,7 @@ class DealRawData():
                 if data_type==0:
                     label, classification_number = self.__getFirstLabel(temp_label)
                     classification_number_count[classification_number]+=1
-                    data_list[classification_number]=data_list[classification_number]+content+','+label
+                    self.data_list[classification_number]=self.data_list[classification_number]+content+','+label
             
                 elif data_type==1:
                     label, classification_number = self.__getSecondLabel(temp_label)
@@ -72,7 +75,7 @@ class DealRawData():
                 if char_split==True:
                     data= " ".join(jieba.cut(data))
                     data=data.replace('  ',' ')
-                with open(file=target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
+                with open(file=self.target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data)
             
             elif data_type==2:
@@ -88,18 +91,22 @@ class DealRawData():
                     data_life_long=" ".join(jieba.cut(data_life_long))
                     data_life_long=data_life_long.replace('  ',' ')
 
-                with open(file=target_filename+'imprison.txt', mode="a",encoding='utf-8') as target_file:
+                with open(file=self.target_filename+'imprison.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data_imprison)
-                with open(file=target_filename+'misdemeanor.txt', mode="a",encoding='utf-8') as target_file:
+                with open(file=self.target_filename+'misdemeanor.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data_misdemeanor)
-                with open(file=target_filename+'felony.txt', mode="a",encoding='utf-8') as target_file:
+                with open(file=self.target_filename+'felony.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data_felony)
-                with open(file=target_filename+'life.txt', mode="a",encoding='utf-8') as target_file:
+                with open(file=self.target_filename+'life.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data_life_long)
-                with open(file=target_filename+'death.txt', mode="a",encoding='utf-8') as target_file:
+                with open(file=self.target_filename+'death.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data_death)
+        
+        min_number=np.min(classification_number_count)
+        self.__filterAndConverge(min_number)
+
         if(data_type!=2):
-            build_vocab(train_data=target_filename+'data.txt',vocab_dir=target_filename+'vocab.txt',vocab_size=5000)
+            build_vocab(train_data=self.target_filename+'data.txt',vocab_dir=self.target_filename+'vocab.txt',vocab_size=5000)
         return "xls2txt finish"
 
     def __getSecondLabel(self,content):
@@ -179,6 +186,27 @@ class DealRawData():
                 return '2\n', 1
         else:
             return "4\n", 4
+
+    def __filterAndConverge(self,min_number):
+        import random
+        all_data=str()
+        data_for_model=str()
+        for i, data in enumerate(self.data_list):
+            temp_list=data.split('\n')
+            random.shuffle(temp_list)
+            with open(file=self.target_filename+str(i)+'.txt', mode="w",encoding='utf-8') as target_file:
+                    target_file.write(data)
+            all_data+=data
+            for j in range(min_number):
+                temp_list[j]+='\n'
+                data_for_model+=temp_list[j]
+        with open(file=self.target_filename+'data.txt', mode="w",encoding='utf-8') as target_file:
+                    target_file.write(all_data)
+        with open(file=self.target_filename+str(i)+'data_for_train.txt', mode="w",encoding='utf-8') as target_file:
+                    target_file.write(data_for_model)
+
+
+
 
 def read_data(file_name):
     contents,labels=[],[]
