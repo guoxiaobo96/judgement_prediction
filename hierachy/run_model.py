@@ -7,12 +7,11 @@ import os
 import sys
 import time
 from datetime import timedelta
-
 import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 
-from cnnModel import TCNNConfig,TextCnn
+from cnnModel import TCNNConfig,TextCnn,CharLevelCNN,TestCNN
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
 base_dir = 'criminal'
@@ -37,11 +36,11 @@ def get_time_dif(start_time):
     return timedelta(seconds=int(round(time_dif)))
 
 
-def feed_data(x_batch, y_batch, keep_prob):
+def feed_data(x_batch, y_batch,keep_prob):
     feed_dict = {
         model.x: x_batch,
         model.y: y_batch,
-        model.keep_prob: keep_prob
+        model.keep_prob:keep_prob
     }
     return feed_dict
 
@@ -54,7 +53,7 @@ def evaluate(sess, x_, y_):
     total_acc = 0.0
     for x_batch, y_batch in batch_eval:
         batch_len = len(x_batch)
-        feed_dict = feed_data(x_batch, y_batch, 1.0)
+        feed_dict = feed_data(x_batch, y_batch, 0.9)
         loss, acc = sess.run([model.loss, model.precision], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
@@ -86,6 +85,7 @@ def train(x_train,y_train,x_val,y_val):
     # 创建session
     session = tf.Session()
     session.run(tf.global_variables_initializer())
+    session.run(tf.local_variables_initializer())
     writer.add_graph(session.graph)
 
     print('Training and evaluating...')
@@ -100,7 +100,7 @@ def train(x_train,y_train,x_val,y_val):
         print('Epoch:', epoch + 1)
         batch_train = batch_iter(x_train, y_train, config.batch_size)
         for x_batch, y_batch in batch_train:
-            feed_dict = feed_data(x_batch, y_batch, config.keep_prob)
+            feed_dict = feed_data(x_batch, y_batch,1.0)
 
             if total_batch % config.save_per_batch == 0:
                 # 每多少轮次将训练结果写入tensorboard scalar
@@ -170,7 +170,7 @@ def test(x_test,y_test):
 
     # 评估
     print("Precision, Recall and F1-Score...")
-    print(metrics.classification_report(y_true=y_test,y_pred=y_pred,target_names=categories))
+#    print(metrics.classification_report(y_true=y_test,y_pred=y_pred,target_names=categories))
 
     # 混淆矩阵
     print("Confusion Matrix...")
@@ -193,9 +193,9 @@ if __name__ == '__main__':
     words, word_to_id = read_vocab(vocab_dir)
     config.vocab_size = len(words)
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
-    model = TextCnn(config)
-
+#    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
+    model = TestCNN(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
-#        test(x_test,y_test)
+    test(x_test,y_test)

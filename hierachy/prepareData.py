@@ -168,15 +168,15 @@ class DealRawData():
             return "40\n", 40
 
     def __getFirstLabel(self,label):
-        if label.find('死刑')!=-1:
+        if label.find('死刑')==-1:
             if label.find('缓刑')!=-1:
                 return "0\n", 0
-            elif label.find('徒刑十')==-1:
-                return '1\n', 1
+            elif label.find('徒刑十')!=-1:
+                return '1\n', 2
             elif label.find('无期')!=-1:
                 return '3\n', 3
             else:
-                return '2\n', 2
+                return '2\n', 1
         else:
             return "4\n", 4
 
