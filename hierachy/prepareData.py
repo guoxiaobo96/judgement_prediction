@@ -20,7 +20,7 @@ class DealRawData():
             sheet = source_file.sheet_by_index(0)
             data_list=[]
             for i in range(100):
-                list.append(str())
+                data_list.append('')
             content = str()
             data=str()
             data_imprison=str()
