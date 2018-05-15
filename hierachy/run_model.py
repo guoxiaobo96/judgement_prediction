@@ -15,7 +15,7 @@ from cnnModel import TCNNConfig,TextCnn,CharLevelCNN,TestCNN
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
 base_dir = 'criminal'
-data_dir=os.path.join(base_dir,'data.txt')
+data_dir=os.path.join(base_dir,'data_for_train.txt')
 #train_dir = os.path.join(base_dir, 'cnews.train.txt')
 #test_dir = os.path.join(base_dir, 'cnews.test.txt')
 #val_dir = os.path.join(base_dir, 'cnews.val.txt')
@@ -53,7 +53,7 @@ def evaluate(sess, x_, y_):
     total_acc = 0.0
     for x_batch, y_batch in batch_eval:
         batch_len = len(x_batch)
-        feed_dict = feed_data(x_batch, y_batch, 0.9)
+        feed_dict = feed_data(x_batch, y_batch, 0.5)
         loss, acc = sess.run([model.loss, model.precision], feed_dict=feed_dict)
         total_loss += loss * batch_len
         total_acc += acc * batch_len
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = TestCNN(config)
+    model = CharLevelCNN(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)

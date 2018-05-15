@@ -201,9 +201,9 @@ class DealRawData():
                 temp_list[j]+='\n'
                 data_for_model+=temp_list[j]
         with open(file=self.target_filename+'data.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(all_data)
-        with open(file=self.target_filename+str(i)+'data_for_train.txt', mode="w",encoding='utf-8') as target_file:
-                    target_file.write(data_for_model)
+            target_file.write(all_data)
+        with open(file=self.target_filename+'data_for_train.txt', mode="w",encoding='utf-8') as target_file:
+            target_file.write(data_for_model)
 
 
 
