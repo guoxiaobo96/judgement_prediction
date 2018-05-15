@@ -18,6 +18,9 @@ class DealRawData():
             source_filename = source_foldname+"/"+source_filename
             source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
             sheet = source_file.sheet_by_index(0)
+            data_list=[]
+            for i in range(100):
+                list.append(str())
             content = str()
             data=str()
             data_imprison=str()
@@ -44,7 +47,7 @@ class DealRawData():
                 if data_type==0:
                     label, classification_number = self.__getFirstLabel(temp_label)
                     classification_number_count[classification_number]+=1
-                    data=data+content+','+label
+                    data_list[classification_number]=data_list[classification_number]+content+','+label
             
                 elif data_type==1:
                     label, classification_number = self.__getSecondLabel(temp_label)
@@ -262,6 +265,7 @@ def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0
     x_test=x_data[int((1-test_rate)*data_size)+1:]
     y_test=y_data[int((1-test_rate)*data_size)+1:]
     return x_train,y_train,x_val,y_val,x_test,y_test
+
 def to_words(content,words):
     return ' '.join(words[x] for x in content)
 
