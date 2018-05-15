@@ -6,6 +6,7 @@ class DealRawData():
         self.classification_number=5
         for _ in range(self.classification_number):
                 self.data_list.append('')
+        self.min_frequence=2
         
 
     def xls2txt(self,data_type,char_split=False):
