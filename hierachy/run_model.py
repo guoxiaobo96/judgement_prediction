@@ -188,14 +188,14 @@ if __name__ == '__main__':
     print('Configuring CNN model...')
     config = TCNNConfig()
     if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
-        build_vocab(data_dir, vocab_dir, config.vocab_size)
+        build_vocab(data_dir, vocab_dir, config.vocab_size,1)
     categories, cat_to_id = read_catagory()
     words, word_to_id = read_vocab(vocab_dir)
     config.vocab_size = len(words)
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = CharLevelCNN(config)
+    model = TestCNN(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)

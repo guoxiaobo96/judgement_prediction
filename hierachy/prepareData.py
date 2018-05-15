@@ -1,7 +1,7 @@
 class DealRawData():
     def __init__(self,case_name):
         self.case_name=case_name
-        self.data_list=list()
+        self.data_list=[]
         self.target_filename= 'D:/judgement_prediction/hierachy/'+self.case_name+'/'
         self.classification_number=5
         for _ in range(self.classification_number):
@@ -9,7 +9,7 @@ class DealRawData():
         self.min_frequence=2
         
 
-    def xls2txt(self,data_type,char_split=False):
+    def xls2txt(self,data_type,char_split=True):
         import numpy as np
         import jieba
         import os
@@ -72,12 +72,13 @@ class DealRawData():
                     else:
                         data_death=data_death+content+','+label
             
-            if data_type==0 or data_type==1:
-                if char_split==True:
-                    data= " ".join(jieba.cut(data))
-                    data=data.replace('  ',' ')
-                with open(file=self.target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data)
+        if data_type==0 or data_type==1:
+            if char_split==True:
+                for i in range(self.classification_number):
+                    self.data_list[i]= " ".join(jieba.cut(self.data_list[i]))
+                    self.data_list[i]=self.data_list[i].replace('  ',' ')
+#                with open(file=self.target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
+#                    target_file.write(data)
             
             elif data_type==2:
                 if char_split==True:
@@ -107,7 +108,7 @@ class DealRawData():
         self.__filterAndConverge(min_number)
 
         if(data_type!=2):
-            build_vocab(train_data=self.target_filename+'data.txt',vocab_dir=self.target_filename+'vocab.txt',vocab_size=5000)
+            build_vocab(train_data=self.target_filename+'data.txt',vocab_dir=self.target_filename+'vocab.txt',vocab_size=5000,min_frequence=1)
         return "xls2txt finish"
 
     def __getSecondLabel(self,content):
@@ -223,7 +224,7 @@ def read_data(file_name):
                     pass
     return contents, labels
 
-def build_vocab(train_data,vocab_dir,vocab_size):
+def build_vocab(train_data,vocab_dir,vocab_size,min_frequence):
         from collections import Counter
         contents,_=read_data(train_data)
         all_data=[]
@@ -232,7 +233,9 @@ def build_vocab(train_data,vocab_dir,vocab_size):
         
         counter = Counter(all_data)
         count_pairs = counter.most_common(vocab_size-1)
-        words, _ = list(zip(*count_pairs))
+        vocab_list=list(zip(*count_pairs))
+        index=vocab_list[1].index(1)
+        words=vocab_list[0][:index]
         # 添加一个 <PAD> 来将所有文本pad为同一长度
         words = ['<PAD>'] + list(words)
         with open(vocab_dir,mode='w',encoding='utf8') as f:
