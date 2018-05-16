@@ -247,8 +247,10 @@ class TestCnnConv2(object):
         self.x = tf.placeholder(tf.int32, [None, self.config.seq_length], name='x')
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
-
+        self.l2_loss=0
+        self.l2_sigma=config.l2_sigma
         self.char_level_cnn()
+        self.num_classes=config.num_classes
 
     def char_level_cnn(self):
         """CNN模型"""
@@ -276,16 +278,19 @@ class TestCnnConv2(object):
             # 全连接层，后面接dropout以及relu激活
             fc = tf.layers.dense(self.h_pool_flat, self.config.hidden_dim, name='fc1')
             fc = tf.contrib.layers.dropout(fc, self.keep_prob)
-            fc = tf.nn.relu(fc)
 
             # 分类器
-            self.logits = tf.layers.dense(fc, self.config.num_classes, name='fc2')
+            W=tf.get_variable("W",shape=[self.feature_length,self.num_classes],initializer=tf.contrib.layers.xavier_initializer())
+            b = tf.Variable(tf.constant(0.1, shape=[self.num_classes]), name="b")
+            self.l2_loss += tf.nn.l2_loss(W)
+            self.l2_loss += tf.nn.l2_loss(b)
+            self.logits=tf.nn.xw_plus_b(fc,W,b)
             self.y_pred = tf.argmax(tf.nn.softmax(self.logits), 1)  # 预测类别
 
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
             cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y)
-            self.loss = tf.reduce_mean(cross_entropy)
+            self.loss = tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_sigma
             # 优化器
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config.learning_rate).minimize(self.loss)
 
