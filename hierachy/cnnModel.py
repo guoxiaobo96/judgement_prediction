@@ -229,7 +229,7 @@ class TestCnn(object):
         self.__train()
 
 class TestCnnConv2(object):
-    """文本分类，CNN模型"""
+    """文本分类，CNN模型,严重 over fitting"""
 
     def __init__(self, config):
         self.config = config
