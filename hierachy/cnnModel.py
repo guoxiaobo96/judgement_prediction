@@ -7,7 +7,7 @@ class TCNNConfig(object):
 
     embedding_size = 64  # 词向量维度
     seq_length = 1000  # 序列长度
-    num_classes = 5  # 类别数
+    num_classes = 41  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表大小
@@ -104,14 +104,11 @@ class TextCnn(object):
             pooled_outputs=[]
             for i,filter_size in enumerate(self.filter_sizes):
                 filter_shape=[filter_size,self.embedding_size,1,1]
-#                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
-#                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
-#                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
-                conv=tf.layers.conv1d(self.embedding_chars,self.num_filters,filter_size)
-                conv=tf.reduce_max(conv,reduction_indices=[1])
-                pooled=tf.layers.dense(conv,self.config.hidden_dim)
-#                h=tf.nn.relu(tf.add(conv,b))
-#                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
+                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
+                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
+                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
+                h=tf.nn.relu(tf.add(conv,b))
+                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,1)

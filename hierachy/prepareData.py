@@ -3,13 +3,13 @@ class DealRawData():
         self.case_name=case_name
         self.data_list=[]
         self.target_filename= 'D:/judgement_prediction/hierachy/'+self.case_name+'/'
-        self.classification_number=5
+        self.classification_number=41
         for _ in range(self.classification_number):
                 self.data_list.append('')
         self.min_frequence=2
         
 
-    def xls2txt(self,data_type,char_split=True):
+    def xls2txt(self,data_type,char_split=False):
         import numpy as np
         import jieba
         import os
@@ -56,7 +56,7 @@ class DealRawData():
                 elif data_type==1:
                     label, classification_number = self.__getSecondLabel(temp_label)
                     classification_number_count[classification_number]+=1
-                    data=data+content+','+label
+                    self.data_list[classification_number]=self.data_list[classification_number]+content+','+label
 
                 elif data_type==2:
                     label, classification_number = self.__getSecondLabel(temp_label)
@@ -103,8 +103,10 @@ class DealRawData():
                     target_file.write(data_life_long)
                 with open(file=self.target_filename+'death.txt', mode="a",encoding='utf-8') as target_file:
                     target_file.write(data_death)
-        
-        min_number=np.min(classification_number_count)
+        min_number=9999
+        for _, number in enumerate(classification_number_count):
+            if number<min_number and number>0:
+                min_number=number
         self.__filterAndConverge(min_number)
 
         if(data_type!=2):
