@@ -5,16 +5,16 @@ import pickle
 class TCNNConfig(object):
     """CNN配置参数"""
 
-    embedding_size = 128  # 词向量维度
-    seq_length = 400  # 序列长度
+    embedding_size = 64  # 词向量维度
+    seq_length = 1000  # 序列长度
     num_classes = 5  # 类别数
     num_filters = 256  # 卷积核数目
-    filter_size = [3,4,5]  # 卷积核尺寸
+    filter_size = [2,3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表大小
 
     hidden_dim = 1024  # 全连接层神经元
 
-    learning_rate = 1e-3  # 学习率
+    learning_rate = 1e-5  # 学习率
 
     batch_size = 64  # 每批训练大小
     num_epochs = 100  # 总迭代轮次
@@ -72,6 +72,7 @@ class CharLevelCNN(object):
 
 class TextCnn(object):
     def __init__(self,config):  
+        self.config=config
         self.batch_size = config.batch_size
         # 词典的大小
         self.vocab_size = config.vocab_size
@@ -103,27 +104,29 @@ class TextCnn(object):
             pooled_outputs=[]
             for i,filter_size in enumerate(self.filter_sizes):
                 filter_shape=[filter_size,self.embedding_size,1,1]
-                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
-                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.zeros_initializer())
-                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
-                h=tf.nn.relu(tf.add(conv,b))
-                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
+#                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
+#                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
+#                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
+                conv=tf.layers.conv1d(self.embedding_chars,self.num_filters,filter_size)
+                conv=tf.reduce_max(conv,reduction_indices=[1])
+                pooled=tf.layers.dense(conv,self.config.hidden_dim)
+#                h=tf.nn.relu(tf.add(conv,b))
+#                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
-            self.h_pool=tf.concat(pooled_outputs,3)
+            self.h_pool=tf.concat(pooled_outputs,1)
             self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])
         
         with tf.variable_scope('drop_out_layer'):
             self.features=tf.nn.dropout(self.h_pool_flat,self.keep_prob)
             
         with tf.variable_scope('fully_connected_layer'):
-            w=tf.get_variable('W',shape=[self.feature_length,self.num_classes],initializer=tf.contrib.layers.xavier_initializer())
-            b=tf.Variable(tf.constant(0.1,shape=[self.num_classes]),name='b')
-            self.y_out=tf.matmul(self.features,w)+b
-            self.y_prob=tf.nn.softmax(self.y_out)
+            self.features=tf.nn.relu(self.features)
+            self.y_out=tf.layers.dense(self.features,self.num_classes)
+            self.y_prob=tf.nn.softmax(self.y_out,1)
     
     def __add_metric(self):
-        self.y_pred=tf.argmax(self.y_out,1)
+        self.y_pred=tf.argmax(self.y_prob,1)
         correct_pred=tf.equal(self.y_pred,tf.argmax(self.y,1))
         self.precision=tf.reduce_mean(tf.cast(correct_pred,tf.float32))
         self.recall, self.recall_op = tf.metrics.recall(tf.argmax(self.y,1), self.y_pred)
@@ -131,7 +134,7 @@ class TextCnn(object):
         tf.summary.scalar('recall', self.recall)
 
     def __add_loss(self):
-        loss=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
+        loss=tf.nn.softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
         self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
     
