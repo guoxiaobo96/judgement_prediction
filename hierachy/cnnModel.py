@@ -120,7 +120,7 @@ class TextCnn(object):
         with tf.variable_scope('fully_connected_layer'):
             self.features=tf.nn.relu(self.features)
             self.y_out=tf.layers.dense(self.features,self.num_classes)
-            self.y_prob=tf.nn.softmax(self.y_out,1)
+            self.y_prob=tf.nn.softmax(self.y_out,3)
     
     def __add_metric(self):
         self.y_pred=tf.argmax(self.y_prob,1)
@@ -189,7 +189,7 @@ class TestCnn(object):
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,1)
-            self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])
+            self.h_pool_flat=tf.reshape(self.h_pool,[-1])
         
         with tf.variable_scope('drop_out_layer'):
             self.features=tf.nn.dropout(self.h_pool_flat,self.keep_prob)
