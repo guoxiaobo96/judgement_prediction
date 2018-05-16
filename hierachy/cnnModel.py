@@ -183,7 +183,7 @@ class TestCnn(object):
         with tf.variable_scope('convolution_pooling_layer'):
             pooled_outputs=[]
             for i,filter_size in enumerate(self.filter_sizes):
-                conv = tf.layers.conv1d(self.embedding_chars, self.config.num_filters, filter_size, name='conv'+i)
+                conv = tf.layers.conv1d(self.embedding_chars, self.config.num_filters, filter_size, name='conv'+str(i))
                 conv=tf.layers.dense(conv,self.config.hidden_dim)
                 pooled=tf.nn.relu(conv)
                 pooled_outputs.append(pooled)
