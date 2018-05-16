@@ -219,7 +219,7 @@ class TestCnn(object):
 
     def __add_loss(self):
         loss=tf.nn.softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
-        self.loss=tf.reduce_mean(loss)+self.l2_loss*self.ls_lambda
+        self.loss=tf.reduce_mean(loss)+self.l2_loss*self.l2_lambda
         tf.summary.scalar('loss',self.loss)
     
 
