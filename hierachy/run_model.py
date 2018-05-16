@@ -14,17 +14,17 @@ from sklearn import metrics
 from cnnModel import TCNNConfig,TextCnn,CharLevelCNN,TestCNN
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
-base_dir = 'criminal_year'
+base_dir = 'criminal'
 data_dir=os.path.join(base_dir,'data.txt')
 #train_dir = os.path.join(base_dir, 'cnews.train.txt')
 #test_dir = os.path.join(base_dir, 'cnews.test.txt')
 #val_dir = os.path.join(base_dir, 'cnews.val.txt')
 vocab_dir = os.path.join(base_dir, 'vocab.txt')
 
-save_dir = 'checkpoints/textcnn'
+save_dir = 'D:/checkpoints/textcnn'
 save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
-train_rate=0.65
-valid_rate=0.15
+train_rate=0.6
+valid_rate=0.2
 test_rate=0.2
 
 
@@ -64,7 +64,7 @@ def evaluate(sess, x_, y_):
 def train(x_train,y_train,x_val,y_val):
     print("Configuring TensorBoard and Saver...")
     # 配置 Tensorboard，重新训练时，请将tensorboard文件夹删除，不然图会覆盖
-    tensorboard_dir = 'tensorboard/textcnn'
+    tensorboard_dir = 'd:/tensorboard/textcnn'
     if not os.path.exists(tensorboard_dir):
         os.makedirs(tensorboard_dir)
 
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = TextCnn(config)
+    model = TestCNN(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)
