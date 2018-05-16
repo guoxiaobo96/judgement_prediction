@@ -21,6 +21,7 @@ class TCNNConfig(object):
     kernel_size = 5
     print_per_batch = 100  # 每多少轮输出一次结果
     save_per_batch = 10  # 每多少轮存入tensorboard
+    l2_lambda=0.1
 
 
 class CharLevelCNN(object):
@@ -120,7 +121,7 @@ class TextCnn(object):
         with tf.variable_scope('fully_connected_layer'):
             self.features=tf.nn.relu(self.features)
             self.y_out=tf.layers.dense(self.features,self.num_classes)
-            self.y_prob=tf.nn.softmax(self.y_out,3)
+            self.y_prob=tf.nn.softmax(self.y_out,1)
     
     def __add_metric(self):
         self.y_pred=tf.argmax(self.y_prob,1)
@@ -168,6 +169,8 @@ class TestCnn(object):
         self.num_filters = config.num_filters
         self.learning_rate=config.learning_rate
         self.num_classes=config.num_classes
+        self.l2_loss=0
+        self.l2_lambda=config.l2_lambda
         self.build_graph()
     
     def __add_placeholders(self):
@@ -179,24 +182,31 @@ class TestCnn(object):
         with tf.variable_scope('embedding_layer'):
             self.W=tf.Variable(tf.random_uniform([self.vocab_size,self.embedding_size],-1.0,-1.0,),name='embedding_weights',dtype='float32')
             self.embedding_chars=tf.nn.embedding_lookup(self.W,self.x)
+            self.embedding_chars_expend=tf.expand_dims(self.embedding_chars,-1)
 
         with tf.variable_scope('convolution_pooling_layer'):
             pooled_outputs=[]
             for i,filter_size in enumerate(self.filter_sizes):
-                conv = tf.layers.conv1d(self.embedding_chars, self.config.num_filters, filter_size, name='conv'+str(i))
-                conv=tf.layers.dense(conv,self.config.hidden_dim)
-                pooled=tf.nn.relu(conv)
+                filter_shape=[filter_size,self.embedding_size,1,1]
+                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
+                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
+                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
+                h=tf.nn.relu(tf.add(conv,b))
+                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,1)
-            self.h_pool_flat=tf.reshape(self.h_pool,[-1])
+            self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])
         
         with tf.variable_scope('drop_out_layer'):
             self.features=tf.nn.dropout(self.h_pool_flat,self.keep_prob)
             
-        with tf.variable_scope('fully_connected_layer'):
-            self.features=tf.nn.relu(self.features)
-            self.y_out=tf.layers.dense(self.features,self.num_classes)
+        with tf.variable_scope('output'):
+            W=tf.get_variable("W",shape=[self.feature_length,self.num_classes],initializer=tf.contrib.layers.xavier_initializer())
+            b = tf.Variable(tf.constant(0.1, shape=[self.num_classes]), name="b")
+            self.l2_loss += tf.nn.l2_loss(W)
+            self.l2_loss += tf.nn.l2_loss(b)
+            self.y_out=tf.nn.xw_plus_b(self.features,W,b)
             self.y_prob=tf.nn.softmax(self.y_out,1)
     
     def __add_metric(self):
@@ -209,7 +219,7 @@ class TestCnn(object):
 
     def __add_loss(self):
         loss=tf.nn.softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
-        self.loss=tf.reduce_mean(loss)
+        self.loss=tf.reduce_mean(loss)+self.l2_loss*self.ls_lambda
         tf.summary.scalar('loss',self.loss)
     
 
@@ -229,7 +239,7 @@ class TestCnn(object):
         self.__train()
 
 class TestCnnConv2(object):
-    """文本分类，CNN模型,严重 over fitting"""
+    """文本分类，CNN模型"""
 
     def __init__(self, config):
         self.config = config
