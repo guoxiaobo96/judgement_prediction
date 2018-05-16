@@ -11,7 +11,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 
-from cnnModel import TCNNConfig,TextCnn,CharLevelCNN,TestCnn
+from cnnModel import TCNNConfig,TextCnn,CharLevelCNN,TestCnn,TestCnnConv2
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
 base_dir = 'criminal'
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = TestCnn(config)
+    model = TestCnnConv2(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)
