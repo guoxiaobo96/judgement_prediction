@@ -195,7 +195,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = TestCnnConv2(config)
+    model = TestCnn(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)

@@ -278,13 +278,10 @@ class TestCnnConv2(object):
             # 全连接层，后面接dropout以及relu激活
             fc = tf.layers.dense(self.h_pool_flat, self.config.hidden_dim, name='fc1')
             fc = tf.contrib.layers.dropout(fc, self.keep_prob)
+            fc.tf.nn.relu(fc)
 
             # 分类器
-            W=tf.get_variable("W",shape=[self.feature_length,self.num_classes],initializer=tf.contrib.layers.xavier_initializer())
-            b = tf.Variable(tf.constant(0.1, shape=[self.num_classes]), name="b")
-            self.l2_loss += tf.nn.l2_loss(W)
-            self.l2_loss += tf.nn.l2_loss(b)
-            self.logits=tf.nn.xw_plus_b(fc,W,b)
+            self.logits=tf.layers.dense(fc,self.num_classes,name="fc2")
             self.y_pred = tf.argmax(tf.nn.softmax(self.logits), 1)  # 预测类别
 
         with tf.name_scope("optimize"):
