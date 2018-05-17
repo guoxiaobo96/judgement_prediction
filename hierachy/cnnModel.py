@@ -6,15 +6,15 @@ class TCNNConfig(object):
     """CNN配置参数"""
 
     embedding_size = 128  # 词向量维度
-    seq_length = 1000  # 序列长度
-    num_classes = 5  # 类别数
+    seq_length = 500  # 序列长度
+    num_classes = 10  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表大小
 
     hidden_dim = 1024  # 全连接层神经元
 
-    learning_rate = 1e-5  # 学习率
+    learning_rate = 1e-6 # 学习率
 
     batch_size = 64  # 每批训练大小
     num_epochs = 10000  # 总迭代轮次
@@ -278,7 +278,7 @@ class TestCnnConv2(object):
             # 全连接层，后面接dropout以及relu激活
             fc = tf.layers.dense(self.h_pool_flat, self.config.hidden_dim, name='fc1')
             fc = tf.contrib.layers.dropout(fc, self.keep_prob)
-            fc.tf.nn.relu(fc)
+            fc=tf.nn.relu(fc)
 
             # 分类器
             self.logits=tf.layers.dense(fc,self.num_classes,name="fc2")
