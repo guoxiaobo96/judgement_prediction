@@ -11,11 +11,11 @@ import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 
-from cnnModel import TCNNConfig,TextCnn,CharLevelCNN,TestCnn,TestCnnConv2
+from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestCnn,TestCnnConv2
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
-base_dir = 'murder_hierachy'
-data_dir=os.path.join(base_dir,'misdemeanor.txt')
+base_dir = 'criminal'
+data_dir=os.path.join(base_dir,'data.txt')
 #train_dir = os.path.join(base_dir, 'cnews.train.txt')
 #test_dir = os.path.join(base_dir, 'cnews.test.txt')
 #val_dir = os.path.join(base_dir, 'cnews.val.txt')
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = TestCnnConv2(config)
+    model = CharLevelCNN(config)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)
