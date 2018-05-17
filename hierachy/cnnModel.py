@@ -17,7 +17,7 @@ class TCNNConfig(object):
     learning_rate = 1e-5  # 学习率
 
     batch_size = 64  # 每批训练大小
-    num_epochs = 100  # 总迭代轮次
+    num_epochs = 10000  # 总迭代轮次
     kernel_size = 5
     print_per_batch = 100  # 每多少轮输出一次结果
     save_per_batch = 10  # 每多少轮存入tensorboard
@@ -248,9 +248,9 @@ class TestCnnConv2(object):
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.l2_loss=0
-        self.l2_sigma=config.l2_sigma
+        self.l2_lambda=config.l2_lambda
+        self.num_classes=self.config.num_classes
         self.char_level_cnn()
-        self.num_classes=config.num_classes
 
     def char_level_cnn(self):
         """CNN模型"""
@@ -290,7 +290,7 @@ class TestCnnConv2(object):
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
             cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y)
-            self.loss = tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_sigma
+            self.loss = tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_lambda
             # 优化器
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config.learning_rate).minimize(self.loss)
 
