@@ -51,7 +51,7 @@ def train_model(case_type,train_data, test_data, train_label, test_label, vocab,
 
     model = Sequential()
     model.add(Embedding(len(vocab) + 1, embedding, input_length=max_len))
-    model.add(LSTM(200, dropout=0.2, recurrent_dropout=0.2))
+    model.add(LSTM(500, dropout=0.2, recurrent_dropout=0.2))
     model.add(Dropout(0.2))
     model.add(Dense(len(test_label[0]), activation='softmax'))
     model.summary()
