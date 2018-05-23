@@ -11,7 +11,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 
-from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestCnn,TestCnnConv2
+from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestModel,TestCnnConv2
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 
 base_dir = 'criminal'
@@ -96,8 +96,7 @@ def train(x_train,y_train,x_val,y_val):
     require_improvement = 1000  # 如果超过1000轮未提升，提前结束训练
 
     flag = False
-    for epoch in range(config.num_epochs):
-        print('Epoch:', epoch + 1)
+    for _ in range(config.num_epochs):
         batch_train = batch_iter(x_train, y_train, config.batch_size)
         for x_batch, y_batch in batch_train:
             feed_dict = feed_data(x_batch, y_batch,1.0)
@@ -195,7 +194,7 @@ if __name__ == '__main__':
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
 #    model = TextCnn(config)
 #    if sys.argv[1] == 'train':
-    model = CharLevelCNN(config)
+    model = model=TestModel(config,128,2,256,5)
     train(x_train,y_train,x_val,y_val)
 #    else:
     test(x_test,y_test)

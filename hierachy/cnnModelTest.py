@@ -7,10 +7,10 @@ class TCNNConfig(object):
 
     embedding_size = 128  # 词向量维度
     seq_length = 500  # 序列长度
-    num_classes = 5  # 类别数
+    num_classes =5  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
-    vocab_size = 5000  # 词汇表大小
+    vocab_size = 3000 # 词汇表大小
 
     hidden_dim = 1024  # 全连接层神经元
 
@@ -21,7 +21,7 @@ class TCNNConfig(object):
     kernel_size = 5
     print_per_batch = 100  # 每多少轮输出一次结果
     save_per_batch = 10  # 每多少轮存入tensorboard
-    l2_lambda=0.1
+    l2_lambda=0.0
 
 
 class CharLevelCNN(object):
@@ -47,9 +47,13 @@ class CharLevelCNN(object):
 
         with tf.name_scope("cnn"):
             # CNN layer
-            conv = tf.layers.conv1d(embedding_inputs, self.config.num_filters, self.config.kernel_size, name='conv')
+            conv_1 = tf.layers.conv1d(embedding_inputs, self.config.num_filters, self.config.kernel_size, name='conv1',trainable=True,padding='same')
             # global max pooling layer
-            gmp = tf.reduce_max(conv, reduction_indices=[1], name='gmp')
+            max_pool_1=tf.layers.max_pooling1d(conv_1,2,strides=1,padding='same')
+            conv_2=tf.layers.conv1d(max_pool_1,self.config.num_filters, self.config.kernel_size, name='conv2')
+            max_pool_2=tf.layers.max_pooling1d(conv_2,2,strides=1,padding='same')
+            gmp=tf.reduce_max(max_pool_2, reduction_indices=[1], name='gmp')
+            
 
         with tf.name_scope("score"):
             # 全连接层，后面接dropout以及relu激活
@@ -108,28 +112,43 @@ class TextCnn(object):
             pooled_outputs=[]
             for i,filter_size in enumerate(self.filter_sizes):
                 filter_shape=[filter_size,self.embedding_size,1,1]
-                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
-                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
-                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
-                h=tf.nn.relu(tf.add(conv,b))
-                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
+                #W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
+                #b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
+                conv = tf.layers.conv1d(self.embedding_chars,256, filter_size,trainable=True,padding='same')
+                pooled=tf.layers.max_pooling1d(conv,2,strides=1,padding='same')
+                conv = tf.layers.conv1d(self.embedding_chars,256, filter_size,trainable=True,padding='same')
+                pooled=tf.layers.max_pooling1d(conv,2,strides=1,padding='same')
+                pooled=tf.reduce_max(pooled, reduction_indices=[1])
+                pooled=tf.nn.relu(pooled)
+                #conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
+                #h=tf.nn.relu(tf.add(conv,b))
+                #pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
+                print(pooled.get_shape())
                 pooled_outputs.append(pooled)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,1)
+            print(self.h_pool.get_shape())
             self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])
+            print(self.h_pool_flat.get_shape())
         
         with tf.variable_scope('drop_out_layer'):
             self.features=tf.nn.dropout(self.h_pool_flat,self.keep_prob)
             
         with tf.variable_scope('fully_connected_layer'):
             self.features=tf.nn.relu(self.features)
+            print(self.features.get_shape())
             self.y_out=tf.layers.dense(self.features,self.num_classes)
+            print(self.y_out.get_shape())
             self.y_prob=tf.nn.softmax(self.y_out,1)
+            print(self.y_prob.get_shape())
     
     def __add_metric(self):
         self.y_pred=tf.argmax(self.y_prob,1)
+        print(self.y_prob.get_shape())
         correct_pred=tf.equal(self.y_pred,tf.argmax(self.y,1))
+        print(correct_pred.get_shape())
         self.precision=tf.reduce_mean(tf.cast(correct_pred,tf.float32))
+        print(self.precision.get_shape())
         self.recall, self.recall_op = tf.metrics.recall(tf.argmax(self.y,1), self.y_pred)
         tf.summary.scalar('precision', self.precision)
         tf.summary.scalar('recall', self.recall)
@@ -155,8 +174,8 @@ class TextCnn(object):
         self.__add_loss()
         self.__train()
 
-class TestCnn(object):
-    def __init__(self,config):  
+class TestModel(object):
+    def __init__(self,config,rnn_size,layer_size,attention_size,grad_clip):  
         self.config=config
         self.batch_size = config.batch_size
         # 词典的大小
@@ -165,51 +184,69 @@ class TestCnn(object):
         # length of word embedding
         self.embedding_size = config.embedding_size
         # seting filter sizes, type of list
+        self.rnn_size=rnn_size
+        self.layer_size=layer_size
         self.filter_sizes = config.filter_size
         # max length of sentence
-        self.sentence_length = config.seq_length
+        self.sequence_length = config.seq_length
         # number of filters
         self.num_filters = config.num_filters
         self.learning_rate=config.learning_rate
         self.num_classes=config.num_classes
+        self.attention_size=attention_size
+        self.grad_clip=grad_clip
         self.l2_loss=0
         self.l2_lambda=config.l2_lambda
         self.build_graph()
     
     def __add_placeholders(self):
-        self.x=tf.placeholder('int32',[None,self.sentence_length],name='x')
+        self.x=tf.placeholder('int32',[None,self.sequence_length],name='x')
         self.y=tf.placeholder('int32',[None,self.num_classes],name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     
     def __inference(self):
         with tf.variable_scope('embedding_layer'):
-            self.W=tf.Variable(tf.random_uniform([self.vocab_size,self.embedding_size],-1.0,-1.0,),name='embedding_weights',dtype='float32')
-            self.embedding_chars=tf.nn.embedding_lookup(self.W,self.x)
-            self.embedding_chars_expend=tf.expand_dims(self.embedding_chars,-1)
+            embedding=tf.Variable(tf.truncated_normal([self.vocab_size,self.embedding_size],stddev=0.1),name='embedding')
+            embedding_inputs=tf.nn.embedding_lookup(embedding,self.x)
+            embedding_inputs=tf.transpose(embedding_inputs,[1,0,2])
+            embedding_inputs=tf.reshape(embedding_inputs,[-1,self.rnn_size])
+            embedding_inputs=tf.split(embedding_inputs,self.sequence_length,0)
 
-        with tf.variable_scope('convolution_pooling_layer'):
-            pooled_outputs=[]
-            for i,filter_size in enumerate(self.filter_sizes):
-                filter_shape=[filter_size,self.embedding_size,1,1]
-                W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
-                b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
-                conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
-                h=tf.nn.relu(tf.add(conv,b))
-                pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
-                pooled_outputs.append(pooled)
-            self.feature_length=self.num_filters*len(self.filter_sizes)
-            self.h_pool=tf.concat(pooled_outputs,1)
-            self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])
+        with tf.name_scope('fw_lstm'),tf.variable_scope('fw_lstm'):
+            print(tf.get_variable_scope().name)
+            lstm_fw_cell_list=[tf.nn.rnn_cell.LSTMCell(self.rnn_size) for _ in range(self.layer_size)]
+            lstm_fw_cell_m=tf.nn.rnn_cell.DropoutWrapper(tf.nn.rnn_cell.MultiRNNCell(lstm_fw_cell_list),output_keep_prob=self.keep_prob)
         
-        with tf.variable_scope('drop_out_layer'):
-            self.features=tf.nn.dropout(self.h_pool_flat,self.keep_prob)
+        with tf.name_scope('bw_lstm'),tf.variable_scope('bw_lstm'):
+            print(tf.get_variable_scope().name)
+            lstm_bw_cell_list=[tf.nn.rnn_cell.LSTMCell(self.rnn_size) for _ in range(self.layer_size)]
+            lstm_bw_cell_m=tf.nn.rnn_cell.DropoutWrapper(tf.nn.rnn_cell.MultiRNNCell(lstm_bw_cell_list),output_keep_prob=self.keep_prob)
             
+        with tf.name_scope('bi_lstm'),tf.variable_scope('bi_lstm'):
+            self.lstm_out,_,_=tf.nn.static_bidirectional_rnn(lstm_bw_cell_m,lstm_fw_cell_m,embedding_inputs,dtype=tf.float32)
+
+        with tf.name_scope('attention'),tf.variable_scope('attention'):
+            attention_w=tf.Variable(tf.truncated_normal([2*self.rnn_size,self.attention_size],stddev=0.1),name='attention_w')
+            attention_b=tf.Variable(tf.constant(0.1,shape=[self.attention_size]),name='attention_b')
+            u_list=[]
+            for t in range(self.sequence_length):
+                u_t=tf.tanh(tf.matmul(self.lstm_out[t],attention_w)+attention_b)
+                u_list.append(u_t)
+            u_w=tf.Variable(tf.truncated_normal([self.attention_size,1],stddev=0.1),name='attention_uw')
+            attention_z=[]
+            for t in range(self.sequence_length):
+                z_t=tf.matmul(u_list[t],u_w)
+                attention_z.append(z_t)
+            attention_zoncat=tf.concat(attention_z,axis=1)
+            attention_alpha=tf.nn.softmax(attention_zoncat)
+            alpha_trans=tf.reshape(tf.transpose(attention_alpha,[1,0]),[self.sequence_length,-1,1])
+            self.attention_output=tf.reduce_sum(self.lstm_out*alpha_trans,0)
+            print(self.attention_output.get_shape())
+
         with tf.variable_scope('output'):
-            W=tf.get_variable("W",shape=[self.feature_length,self.num_classes],initializer=tf.contrib.layers.xavier_initializer())
-            b = tf.Variable(tf.constant(0.1, shape=[self.num_classes]), name="b")
-            self.l2_loss += tf.nn.l2_loss(W)
-            self.l2_loss += tf.nn.l2_loss(b)
-            self.y_out=tf.nn.xw_plus_b(self.features,W,b)
+            fc_w=tf.Variable(tf.truncated_normal([2*self.rnn_size,self.num_classes],stddev=0.1),name='fc_w')
+            fc_b=tf.Variable(tf.zeros(self.num_classes),name='fc_b')
+            self.y_out=tf.nn.xw_plus_b(self.attention_output,fc_w,fc_b)
             self.y_prob=tf.nn.softmax(self.y_out,1)
     
     def __add_metric(self):
@@ -220,25 +257,24 @@ class TestCnn(object):
         tf.summary.scalar('precision', self.precision)
         tf.summary.scalar('recall', self.recall)
 
-    def __add_loss(self):
+    def __add_grads(self):
         loss=tf.nn.softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
-        self.loss=tf.reduce_mean(loss)+self.l2_loss*self.l2_lambda
+        self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
+        self.t_vars=tf.trainable_variables()
+        self.grads,_=tf.clip_by_global_norm(tf.gradients(self.loss,self.t_vars),self.grad_clip)
     
 
     def __train(self):
-        self.global_step=tf.Variable(0,trainable=False)
-        self.optimizer=tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
-#        extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-#        with tf.control_dependencies(extra_update_ops):
-#            self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
+        self.optimizer=tf.train.AdamOptimizer(self.learning_rate).apply_gradients(zip(self.grads,self.t_vars))
+        
 
     
     def build_graph(self):
         self.__add_placeholders()
         self.__inference()
         self.__add_metric()
-        self.__add_loss()
+        self.__add_grads()
         self.__train()
 
 class TestCnnConv2(object):
@@ -298,3 +334,10 @@ class TestCnnConv2(object):
             # 准确率
             correct_pred = tf.equal(tf.argmax(self.y, 1), self.y_pred)
             self.precision = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
+def main():
+    config=TCNNConfig()
+    model=TestModel(config,128,2,256,5)
+
+if __name__=='__main__':
+    main()

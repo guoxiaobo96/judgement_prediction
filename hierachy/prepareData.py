@@ -10,99 +10,96 @@ class DealRawData():
         
 
     def xls2txt(self,data_type,char_split=False):
-        import numpy as np
         import jieba
-        import os
         import xlrd
         """this part is used to change the date from xls version to txt version
         PARA:
         data_type:如果为0则将案件结果简单分为缓刑、轻型、重型、无期和死刑，且放在同一文件中，如果为1则具体到年，但是放在同一文件中，如果为2则具体到年但是根据量刑的轻重放在不同文件中"""
         classification_number_count=[0 for i in range(self.classification_number)]
         source_foldname = 'D:/案件数据/'+self.case_name
-        source_file_list = os.listdir(source_foldname)
+        source_filename=source_foldname+'/all_data.xls'
 
-        for source_filename in source_file_list:
-            source_filename = source_foldname+"/"+source_filename
-            source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
-            sheet = source_file.sheet_by_index(0)
-            content = str()
-            data=str()
-            data_imprison=str()
-            data_misdemeanor=str()
-            data_felony=str()
-            data_life_long=str()
-            data_death=str()
+        source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
+        sheet = source_file.sheet_by_index(0)
+        content = str()
+        data=str()
+        data_imprison=str()
+        data_misdemeanor=str()
+        data_felony=str()
+        data_life_long=str()
+        data_death=str()
 
-            for _ in range(1, sheet.nrows):
-                content = sheet.cell(_, 13).value
-                position = content.find("本院认为")
-                if position>0:
-                    content = content[position:]
-                position = content.find("中华人民共和国刑法")
-                if position>0:
-                    content = content[:position]
-                content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
-                content = content.replace('\n', '')
-                temp_label = sheet.cell(_, 14).value+''
-                delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
-                    '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
-                for i in range(len(delete_list)):
-                    content = content.replace(delete_list[i], '')
-                if data_type==0:
-                    label, classification_number = self.__getFirstLabel(temp_label)
-                    classification_number_count[classification_number]+=1
-                    self.data_list[classification_number]=self.data_list[classification_number]+content+','+label
+        for _ in range(1, sheet.nrows):
+            content = sheet.cell(_, 13).value
+            position = content.find("本院认为")
+            if position>0:
+                content = content[position:]
+            position = content.find("中华人民共和国刑法")
+            if position>0:
+                content = content[:position]
+            content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
+            content = content.replace('\n', '')
+            temp_label = sheet.cell(_, 14).value+''
+            delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
+                '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
+            for i in range(len(delete_list)):
+                content = content.replace(delete_list[i], '')
+            if data_type==0:
+                label, classification_number = self.__getFirstLabel(temp_label)
+                classification_number_count[classification_number]+=1
+                self.data_list[classification_number]=self.data_list[classification_number]+content+','+label
             
-                elif data_type==1:
-                    label, classification_number = self.__getSecondLabel(temp_label)
-                    classification_number_count[classification_number]+=1
-                    self.data_list[classification_number]=self.data_list[classification_number]+content+','+label
+            elif data_type==1:
+                label, classification_number = self.__getSecondLabel(temp_label)
+                classification_number_count[classification_number]+=1
+                self.data_list[classification_number]=self.data_list[classification_number]+content+','+label
 
-                elif data_type==2:
-                    label, classification_number = self.__getSecondLabel(temp_label)
-                    classification_number_count[classification_number]+=1
-                    if int(label)==0:
-                        data_imprison = data_imprison+content+","+label
-                    elif int(label)>0 and int(label)<10:
-                        data_misdemeanor= data_misdemeanor+content+","+label
-                    elif int(label)>=10 and int(label)<30:
-                        data_felony= data_felony+content+","+label
-                    elif int(label)==30:
-                        data_life_long=data_life_long+content+','+label
-                    else:
-                        data_death=data_death+content+','+label
+            elif data_type==2:
+                label, classification_number = self.__getSecondLabel(temp_label)
+                classification_number_count[classification_number]+=1
+                temp_place=label.find(',')
+                if int(label[temp_place+1:])==0:
+                    data_imprison = data_imprison+content+","+label
+                elif int(label[temp_place+1:])>0 and int(label[temp_place+1:])<10:
+                    data_misdemeanor= data_misdemeanor+content+","+label
+                elif int(label[temp_place+1:])>=10 and int(label[temp_place+1:])<30:
+                    data_felony= data_felony+content+","+label
+                elif int(label[temp_place+1:])==30:
+                    data_life_long=data_life_long+content+','+label
+                else:
+                    data_death=data_death+content+','+label
+                self.data_list[classification_number]=self.data_list[classification_number]+content+','+label[temp_place+1:]
             
         if data_type==0 or data_type==1:
             if char_split==True:
                 for i in range(self.classification_number):
                     self.data_list[i]= " ".join(jieba.cut(self.data_list[i]))
                     self.data_list[i]=self.data_list[i].replace('  ',' ')
-#                with open(file=self.target_filename+'data.txt', mode="a",encoding='utf-8') as target_file:
-#                    target_file.write(data)
-            
-            elif data_type==2:
-                if char_split==True:
-                    data_imprison= " ".join(jieba.cut(data_imprison))
-                    data_imprison=data_imprison.replace('  ',' ')
-                    data_misdemeanor= " ".join(jieba.cut(data_misdemeanor))
-                    data_misdemeanor=data_misdemeanor.replace('  ',' ')
-                    data_death = " ".join(jieba.cut(data_death))
-                    data_death=data_death.replace('  ',' ')
-                    data_felony= " ".join(jieba.cut(data_felony))
-                    data_felony=data_felony.replace('  ',' ')
-                    data_life_long=" ".join(jieba.cut(data_life_long))
-                    data_life_long=data_life_long.replace('  ',' ')
 
-                with open(file=self.target_filename+'imprison.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data_imprison)
-                with open(file=self.target_filename+'misdemeanor.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data_misdemeanor)
-                with open(file=self.target_filename+'felony.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data_felony)
-                with open(file=self.target_filename+'life.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data_life_long)
-                with open(file=self.target_filename+'death.txt', mode="a",encoding='utf-8') as target_file:
-                    target_file.write(data_death)
+            
+        elif data_type==2:
+            if char_split==True:
+                data_imprison= " ".join(jieba.cut(data_imprison))
+                data_imprison=data_imprison.replace('  ',' ')
+                data_misdemeanor= " ".join(jieba.cut(data_misdemeanor))
+                data_misdemeanor=data_misdemeanor.replace('  ',' ')
+                data_death = " ".join(jieba.cut(data_death))
+                data_death=data_death.replace('  ',' ')
+                data_felony= " ".join(jieba.cut(data_felony))
+                data_felony=data_felony.replace('  ',' ')
+                data_life_long=" ".join(jieba.cut(data_life_long))
+                data_life_long=data_life_long.replace('  ',' ')
+
+            with open(file=self.target_filename+'imprison.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_imprison)
+            with open(file=self.target_filename+'misdemeanor.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_misdemeanor)
+            with open(file=self.target_filename+'felony.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_felony)
+            with open(file=self.target_filename+'life.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_life_long)
+            with open(file=self.target_filename+'death.txt', mode="a",encoding='utf-8') as target_file:
+                target_file.write(data_death)
         min_number=9999
         for _, number in enumerate(classification_number_count):
             if number<min_number and number>0:
@@ -115,6 +112,8 @@ class DealRawData():
 
     def __getSecondLabel(self,content):
         """this part is used to label the case and it should be changed when dealing with different cases"""
+        content=content.replace('\n','')
+        content=content.replace(',','，')
         if content.find("死刑")==-1:
             if content.find("缓刑")!=-1:
                 return "0\n", 0
@@ -308,6 +307,28 @@ def read_catagory():
     catagories=[x for x in catagories]
     cat_to_id=dict(zip(catagories,range(len(catagories))))
     return catagories,cat_to_id
+
+def claen_data():
+    import xlrd,xlwt
+    import os
+    source_foldname = 'D:/案件数据/murder_hierachy'
+    source_file_list = os.listdir(source_foldname)
+    target_file=xlwt.Workbook(encoding='utf-8')
+    target_sheet=target_file.add_sheet('sheet1')
+    target_col=0
+    for source in source_file_list:
+        source_filename = source_foldname+"/"+source
+        source_file = xlrd.open_workbook(filename=source_filename,encoding_override='utf-8')
+        sheet = source_file.sheet_by_index(0)
+        for i in range(1, sheet.nrows):
+            content=sheet.cell(i,1).value
+            if content.find('、')==-1 and content.find(';')==-1 and content.find('杀人')!=-1:
+                for j in range(1,sheet.ncols):
+                    target_sheet.write(target_col,j-1,sheet.cell(i,j).value)
+                target_col+=1
+    target_file.save(source_foldname+'/all_data.xls')
+
+        
 def main():
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
