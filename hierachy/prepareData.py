@@ -303,7 +303,7 @@ def to_words(content,words):
     return ' '.join(words[x] for x in content)
 
 def read_catagory():
-    catagories=[]
+    catagories=['1','2','3','4','5','6','7','8','9']
     catagories=[x for x in catagories]
     cat_to_id=dict(zip(catagories,range(len(catagories))))
     return catagories,cat_to_id
