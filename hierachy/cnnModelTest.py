@@ -7,10 +7,10 @@ class TCNNConfig(object):
 
     embedding_size = 128  # 词向量维度
     seq_length = 500  # 序列长度
-    num_classes =5  # 类别数
+    num_classes = 41  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
-    vocab_size = 3000 # 词汇表大小
+    vocab_size = 5000  # 词汇表大小
 
     hidden_dim = 1024  # 全连接层神经元
 
@@ -21,7 +21,7 @@ class TCNNConfig(object):
     kernel_size = 5
     print_per_batch = 100  # 每多少轮输出一次结果
     save_per_batch = 10  # 每多少轮存入tensorboard
-    l2_lambda=0.0
+    l2_lambda=0.1
 
 
 class CharLevelCNN(object):
@@ -47,12 +47,14 @@ class CharLevelCNN(object):
 
         with tf.name_scope("cnn"):
             # CNN layer
-            conv_1 = tf.layers.conv1d(embedding_inputs, self.config.num_filters, self.config.kernel_size, name='conv1',trainable=True,padding='same')
+            conv_1 = tf.layers.conv1d(embedding_inputs, 64, 3, name='conv1',trainable=True,padding='same')
+            conv_1=tf.nn.relu(conv_1)
             # global max pooling layer
             max_pool_1=tf.layers.max_pooling1d(conv_1,2,strides=1,padding='same')
-            conv_2=tf.layers.conv1d(max_pool_1,self.config.num_filters, self.config.kernel_size, name='conv2')
-            max_pool_2=tf.layers.max_pooling1d(conv_2,2,strides=1,padding='same')
-            gmp=tf.reduce_max(max_pool_2, reduction_indices=[1], name='gmp')
+            conv_2=tf.layers.conv1d(max_pool_1,64, 1, name='conv2')
+            conv_3=tf.layers.conv1d(max_pool_1,32, 3, name='conv3')
+            max_pool_3=tf.layers.max_pooling1d(conv_3,1,strides=1,padding='same')
+            gmp=tf.reduce_max(max_pool_3, reduction_indices=[1], name='gmp')
             
 
         with tf.name_scope("score"):
@@ -110,20 +112,17 @@ class TextCnn(object):
 
         with tf.variable_scope('convolution_pooling_layer'):
             pooled_outputs=[]
-            for i,filter_size in enumerate(self.filter_sizes):
-                filter_shape=[filter_size,self.embedding_size,1,1]
-                #W=tf.get_variable('W'+str(i),shape=filter_shape,initializer=tf.truncated_normal_initializer())
-                #b = tf.get_variable('b'+str(i), shape=[self.num_filters],initializer=tf.truncated_normal_initializer())
-                conv = tf.layers.conv1d(self.embedding_chars,256, filter_size,trainable=True,padding='same')
-                pooled=tf.layers.max_pooling1d(conv,2,strides=1,padding='same')
-                conv = tf.layers.conv1d(self.embedding_chars,256, filter_size,trainable=True,padding='same')
-                pooled=tf.layers.max_pooling1d(conv,2,strides=1,padding='same')
-                pooled=tf.reduce_max(pooled, reduction_indices=[1])
-                pooled=tf.nn.relu(pooled)
-                #conv=tf.nn.conv2d(self.embedding_chars_expend,W,strides=[1,1,1,1],padding='VALID',name='conv'+str(i))
-                #h=tf.nn.relu(tf.add(conv,b))
-                #pooled=tf.nn.max_pool(h,ksize=[1,self.sentence_length-filter_size+1,1,1],strides=[1,1,1,1],padding='VALID',name='pool')
-                pooled_outputs.append(pooled)
+            for _,filter_size in enumerate(self.filter_sizes):
+                conv_1 = tf.layers.conv1d(self.embedding_chars,256, filter_size,trainable=True,padding='valid')
+                conv_1=tf.nn.relu(conv_1)
+                pooled_1=tf.layers.max_pooling1d(conv_1,3,strides=1,padding='same')
+                conv_2 = tf.layers.conv1d(pooled_1,256, filter_size-1,trainable=True,padding='valid')
+                conv_2=tf.nn.relu(conv_2)
+                conv_3 = tf.layers.conv1d(conv_2,256, filter_size-1,trainable=True,padding='valid')
+                conv_3=tf.nn.relu(conv_3)
+                pooled_3=tf.layers.max_pooling1d(conv_3,2,strides=1,padding='same')
+                pooled_3=tf.reduce_max(pooled_3, reduction_indices=[1])
+                pooled_outputs.append(pooled_3)
             self.feature_length=self.num_filters*len(self.filter_sizes)
             self.h_pool=tf.concat(pooled_outputs,1)
             self.h_pool_flat=tf.reshape(self.h_pool,[-1,self.feature_length])

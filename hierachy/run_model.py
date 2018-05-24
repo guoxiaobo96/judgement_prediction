@@ -13,8 +13,9 @@ from sklearn import metrics
 
 from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestModel,TestCnnConv2
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
+import cnnModel
 
-base_dir = 'criminal'
+base_dir = 'criminal_year'
 data_dir=os.path.join(base_dir,'data.txt')
 #train_dir = os.path.join(base_dir, 'cnews.train.txt')
 #test_dir = os.path.join(base_dir, 'cnews.test.txt')
@@ -109,9 +110,8 @@ def train(x_train,y_train,x_val,y_val):
             if total_batch % config.print_per_batch == 0:
                 # 每多少轮次输出在训练集和验证集上的性能
                 feed_dict[model.keep_prob] = 1.0
-                loss_train, acc_train,recall = session.run([model.loss, model.precision,model.recall], feed_dict=feed_dict)
+                loss_train, acc_train = session.run([model.loss, model.precision], feed_dict=feed_dict)
                 loss_val, acc_val = evaluate(session, x_val, y_val)  # todo
-                print(recall)
 
                 if acc_val > best_acc_val:
                     # 保存最好结果
@@ -193,7 +193,7 @@ if __name__ == '__main__':
     words, word_to_id = read_vocab(vocab_dir)
     config.vocab_size = len(words)
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
-    model = TextCnn(config)
+    model = CharLevelCNN(config)
 #    if sys.argv[1] == 'train':
     #model =TestModel(config,128,2,256,5)
     train(x_train,y_train,x_val,y_val)
