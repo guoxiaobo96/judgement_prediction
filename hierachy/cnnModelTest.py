@@ -7,7 +7,7 @@ class TCNNConfig(object):
 
     embedding_size = 128  # 词向量维度
     seq_length = 500  # 序列长度
-    num_classes = 41  # 类别数
+    num_classes = 5  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表大小
@@ -34,7 +34,7 @@ class CharLevelCNN(object):
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.l2_loss=0
-        self.l2_lambda=0.1
+        self.l2_lambda=0.2
 
         self.char_level_cnn()
 
@@ -70,7 +70,7 @@ class CharLevelCNN(object):
 
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y)
+            cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.y)
             self.loss=tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_lambda
             # 优化器
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config.learning_rate).minimize(self.loss)
@@ -144,7 +144,7 @@ class TextCnn(object):
         tf.summary.scalar('recall', self.recall)
 
     def __add_loss(self):
-        loss=tf.nn.softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
+        loss=tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.y_out, labels=self.y)
         self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
     
@@ -249,7 +249,7 @@ class TestModel(object):
         tf.summary.scalar('recall', self.recall)
 
     def __add_grads(self):
-        loss=tf.nn.softmax_cross_entropy_with_logits(logits=self.y_out, labels=self.y)
+        loss=tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.y_out, labels=self.y)
         self.loss=tf.reduce_mean(loss)
         tf.summary.scalar('loss',self.loss)
         self.t_vars=tf.trainable_variables()
@@ -316,7 +316,7 @@ class TestCnnConv2(object):
 
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y)
+            cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.y)
             self.loss = tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_lambda
             # 优化器
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config.learning_rate).minimize(self.loss)
@@ -363,8 +363,8 @@ class HierachyCnn(object):
             # 全连接层，后面接dropout以及relu激活
             fc = tf.layers.dense(gmp, self.config.hidden_dim, name='fc1')
             fc = tf.contrib.layers.dropout(fc, self.keep_prob)
-            W=tf.get_variable("W",shape=[self.config.hidden_dim,41],initializer=tf.contrib.layers.xavier_initializer())
-            b = tf.Variable(tf.constant(0.1, shape=[41]), name="b")
+            W=tf.get_variable("W",shape=[self.config.hidden_dim,23],initializer=tf.contrib.layers.xavier_initializer())
+            b = tf.Variable(tf.constant(0.1, shape=[23]), name="b")
             self.l2_loss += tf.nn.l2_loss(W)
             self.l2_loss += tf.nn.l2_loss(b)
             self.logits=tf.nn.xw_plus_b(fc,W,b)
@@ -381,7 +381,7 @@ class HierachyCnn(object):
 
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y)
+            cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.y)
             self.loss=tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_lambda
             # 优化器
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config.learning_rate).minimize(self.loss)
@@ -437,8 +437,8 @@ class TestHierachyCnn(object):
             # 全连接层，后面接dropout以及relu激活
             fc = tf.layers.dense(gmp, self.config.hidden_dim, name='fc1')
             fc = tf.contrib.layers.dropout(fc, self.keep_prob)
-            W=tf.get_variable("W",shape=[self.config.hidden_dim,41],initializer=tf.contrib.layers.xavier_initializer())
-            b = tf.Variable(tf.constant(0.1, shape=[41]), name="b")
+            W=tf.get_variable("W",shape=[self.config.hidden_dim,23],initializer=tf.contrib.layers.xavier_initializer())
+            b = tf.Variable(tf.constant(0.1, shape=[23]), name="b")
             self.l2_loss += tf.nn.l2_loss(W)
             self.l2_loss += tf.nn.l2_loss(b)
             self.logits=tf.nn.xw_plus_b(fc,W,b)
@@ -455,7 +455,7 @@ class TestHierachyCnn(object):
 
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.y)
+            cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.y)
             self.loss=tf.reduce_mean(cross_entropy)+self.l2_loss*self.l2_lambda
             # 优化器
             self.optimizer = tf.train.AdamOptimizer(learning_rate=self.config.learning_rate).minimize(self.loss)

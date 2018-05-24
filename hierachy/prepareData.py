@@ -62,9 +62,9 @@ class DealRawData():
                     data_imprison = data_imprison+content+","+label
                 elif int(label[temp_place+1:])>0 and int(label[temp_place+1:])<10:
                     data_misdemeanor= data_misdemeanor+content+","+label
-                elif int(label[temp_place+1:])>=10 and int(label[temp_place+1:])<30:
+                elif int(label[temp_place+1:])>=10 and int(label[temp_place+1:])<20:
                     data_felony= data_felony+content+","+label
-                elif int(label[temp_place+1:])==30:
+                elif int(label[temp_place+1:])==21:
                     data_life_long=data_life_long+content+','+label
                 else:
                     data_death=data_death+content+','+label
@@ -276,7 +276,7 @@ def process_data(file_name, word_to_id, cat_to_id,max_length=600):
 
     return x_pad,y_pad,len(all_data)
 
-def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0.2):
+def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0.2,split=True):
     x_data,y_data,data_size=process_data(data_dir, word_to_id, cat_to_id, seq_length)
     x_train=x_data[:int(train_rate*data_size)]
     y_train=y_data[:int(train_rate*data_size)]
@@ -284,6 +284,8 @@ def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0
     y_val=y_data[int(train_rate*data_size)+1:int((1-test_rate)*data_size)]
     x_test=x_data[int((1-test_rate)*data_size)+1:]
     y_test=y_data[int((1-test_rate)*data_size)+1:]
+    if split==False:
+        return x_data,y_data
     return x_train,y_train,x_val,y_val,x_test,y_test
 
 def to_words(content,words):
@@ -315,8 +317,30 @@ def claen_data():
                 target_col+=1
     target_file.save(source_foldname+'/all_data.xls')
 
+def cut_data(base_dir):
+    import random
+    file='misdemeanor'
+    file_name=base_dir+file+'.txt'
+    contents,labels=read_data(file_name)
+    data_id, label_id,all_data=[],[],[]
+    for i in range(len(contents)):
+        all_data.append(contents[i]+','+labels[i])
+    random.shuffle(all_data)
+    with open(file=base_dir+file+'_train.txt',mode='w',encoding='utf8') as f:
+        for i, iter in enumerate(all_data):
+            if i<=int(0.75*len(all_data)):
+                f.write(iter+'\n')
+    with open(file=base_dir+file+'_valid.txt',mode='w',encoding='utf8') as f:
+        for i, iter in enumerate(all_data):
+            if i>int(0.75*len(all_data)) and i <=int(0.85*len(all_data)):
+                f.write(iter+'\n')
+    with open(file=base_dir+file+'_test.txt',mode='w',encoding='utf8') as f:
+        for i, iter in enumerate(all_data):
+            if i>int(0.85*len(all_data)):
+                f.write(iter+'\n')
         
 def main():
+    cut_data('D:/judgement_prediction/hierachy/murder_hierachy/')
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
     target_case=DealRawData(case_name)

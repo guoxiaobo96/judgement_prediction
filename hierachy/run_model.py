@@ -15,11 +15,11 @@ from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestModel,TestCnnConv2,
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 import cnnModel
 
-base_dir = 'criminal_year'
-data_dir=os.path.join(base_dir,'data.txt')
-#train_dir = os.path.join(base_dir, 'cnews.train.txt')
-#test_dir = os.path.join(base_dir, 'cnews.test.txt')
-#val_dir = os.path.join(base_dir, 'cnews.val.txt')
+base_dir = 'murder_hierachy'
+#data_dir=os.path.join(base_dir,'data.txt')
+train_dir = os.path.join(base_dir, 'data_train.txt')
+test_dir = os.path.join(base_dir, 'data_test.txt')
+val_dir = os.path.join(base_dir, 'data_valid.txt')
 vocab_dir = os.path.join(base_dir, 'vocab.txt')
 
 save_dir = 'D:/checkpoints/textcnn'
@@ -187,13 +187,15 @@ if __name__ == '__main__':
 
     print('Configuring CNN model...')
     config = TCNNConfig()
-    if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
-        build_vocab(data_dir, vocab_dir, config.vocab_size,1)
+    #if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
+        #build_vocab(data_dir, vocab_dir, config.vocab_size,1)
     categories, cat_to_id = read_catagory()
     words, word_to_id = read_vocab(vocab_dir)
     config.vocab_size = len(words)
-    x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
-    model = TestHierachyCnn(config)
+    x_train,y_train=get_data(train_dir,word_to_id,cat_to_id,config.seq_length,split=False)
+    x_val,y_val=get_data(val_dir,word_to_id,cat_to_id,config.seq_length,split=False)
+    x_test,y_test=get_data(test_dir,word_to_id,cat_to_id,config.seq_length,split=False)
+    model =CharLevelCNN(config)
 #    if sys.argv[1] == 'train':
     #model =TestModel(config,128,2,256,5)
     train(x_train,y_train,x_val,y_val)
