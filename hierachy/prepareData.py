@@ -118,7 +118,7 @@ class DealRawData():
             if content.find("缓刑")!=-1:
                 return "0\n", 0
             elif content.find("无期徒刑")!=-1:
-                return "30\n", 30
+                return "21\n", 21
             elif content.find("徒刑十")!=-1:
                 if content.find("徒刑十一年")!=-1:
                     return "11\n", 11
@@ -140,19 +140,6 @@ class DealRawData():
                     return "19\n", 19
                 else:
                     return "10\n",10
-            elif content.find("徒刑二十")!=-1:
-                if content.find("徒刑二十一年")!=-1:
-                    return "21\n", 21
-                elif content.find("徒刑二十二年")!=-1:
-                    return "22\n", 22
-                elif content.find("徒刑二十三年")!=-1:
-                    return "23\n", 23
-                elif content.find("徒刑二十四年")!=-1:
-                    return "24\n", 24
-                elif content.find("徒刑二十五年")!=-1:
-                    return "25\n", 25
-                else:
-                    return "20\n",20
             else:
                 if content.find("刑一年")!=-1:
                     return "1\n", 1
@@ -175,7 +162,7 @@ class DealRawData():
                 else:
                     return "10\n",10
         else:
-            return "40\n", 40
+            return "22\n", 22
 
     def __getFirstLabel(self,label):
         if label.find('死刑')==-1:

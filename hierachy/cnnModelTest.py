@@ -7,7 +7,7 @@ class TCNNConfig(object):
 
     embedding_size = 128  # 词向量维度
     seq_length = 500  # 序列长度
-    num_classes = 5  # 类别数
+    num_classes = 41  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表大小
@@ -52,7 +52,7 @@ class CharLevelCNN(object):
             # global max pooling layer
             max_pool_1=tf.layers.max_pooling1d(conv_1,2,strides=1,padding='same')
             conv_2=tf.layers.conv1d(max_pool_1,64, 1, name='conv2')
-            conv_3=tf.layers.conv1d(max_pool_1,32, 3, name='conv3')
+            conv_3=tf.layers.conv1d(conv_2,32, 3, name='conv3')
             max_pool_3=tf.layers.max_pooling1d(conv_3,1,strides=1,padding='same')
             gmp=tf.reduce_max(max_pool_3, reduction_indices=[1], name='gmp')
             
@@ -152,9 +152,9 @@ class TextCnn(object):
     def __train(self):
         self.global_step=tf.Variable(0,trainable=False)
         self.optimizer=tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
-#        extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-#        with tf.control_dependencies(extra_update_ops):
-#            self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
+        #extra_update_ops=tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        #with tf.control_dependencies(extra_update_ops):
+            #self.train_op = self.optimizer.minimize(self.loss, global_step=self.global_step)
 
     
     def build_graph(self):
@@ -201,6 +201,7 @@ class TestModel(object):
             embedding_inputs=tf.transpose(embedding_inputs,[1,0,2])
             embedding_inputs=tf.reshape(embedding_inputs,[-1,self.rnn_size])
             embedding_inputs=tf.split(embedding_inputs,self.sequence_length,0)
+
 
         with tf.name_scope('fw_lstm'),tf.variable_scope('fw_lstm'):
             print(tf.get_variable_scope().name)
@@ -368,15 +369,14 @@ class HierachyCnn(object):
             self.l2_loss += tf.nn.l2_loss(b)
             self.logits=tf.nn.xw_plus_b(fc,W,b)
             temp=[]
-            temp.append(tf.slice(self.logits,[0,0],[-1,1]))
-            temp.append(tf.slice(self.logits,[0,1],[-1,9]))
-            temp.append(tf.slice(self.logits,[0,10],[-1,16]))
-            temp.append(tf.slice(self.logits,[0,30],[-1,1]))
-            temp.append(tf.slice(self.logits,[0,40],[-1,1]))
+            temp.append(tf.slice(self.y,[0,0],[-1,1]))
+            temp.append(tf.slice(self.y,[0,1],[-1,9]))
+            temp.append(tf.slice(self.y,[0,10],[-1,9]))
+            temp.append(tf.slice(self.y,[0,20],[-1,1]))
+            temp.append(tf.slice(self.y,[0,21],[-1,1]))
             for i in range(4):
                 temp[i]=tf.reduce_mean(temp[i],1,keepdims=True)
             self.logits=tf.concat([temp[0],temp[1],temp[2],temp[3],temp[4]],axis=1)
-            print(self.logits.get_shape())
             self.y_pred = tf.argmax(tf.nn.softmax(self.logits), 1)  # 预测类别
 
         with tf.name_scope("optimize"):
@@ -411,6 +411,15 @@ class TestHierachyCnn(object):
         with tf.device('/cpu:0'):
             embedding = tf.get_variable('embedding', [self.config.vocab_size, self.config.embedding_size])
             embedding_inputs = tf.nn.embedding_lookup(embedding, self.x)
+            temp=[]
+            temp.append(tf.slice(self.y,[0,0],[-1,1]))
+            temp.append(tf.slice(self.y,[0,1],[-1,9]))
+            temp.append(tf.slice(self.y,[0,10],[-1,9]))
+            temp.append(tf.slice(self.y,[0,20],[-1,1]))
+            temp.append(tf.slice(self.y,[0,21],[-1,1]))
+            for i in range(4):
+                temp[i]=tf.reduce_mean(temp[i],1,keepdims=True)
+            self.y_1=tf.concat([temp[0],temp[1],temp[2],temp[3],temp[4]],axis=1)
 
         with tf.name_scope("cnn"):
             # CNN layer
@@ -436,14 +445,13 @@ class TestHierachyCnn(object):
             temp=[]
             temp.append(tf.slice(self.logits,[0,0],[-1,1]))
             temp.append(tf.slice(self.logits,[0,1],[-1,9]))
-            temp.append(tf.slice(self.logits,[0,10],[-1,16]))
-            temp.append(tf.slice(self.logits,[0,30],[-1,1]))
-            temp.append(tf.slice(self.logits,[0,40],[-1,1]))
+            temp.append(tf.slice(self.logits,[0,10],[-1,9]))
+            temp.append(tf.slice(self.logits,[0,20],[-1,1]))
+            temp.append(tf.slice(self.logits,[0,21],[-1,1]))
             for i in range(4):
                 temp[i]=tf.reduce_mean(temp[i],1,keepdims=True)
-            self.logits=tf.concat([temp[0],temp[1],temp[2],temp[3],temp[4]],axis=1)
-            print(self.logits.get_shape())
-            self.y_pred = tf.argmax(tf.nn.softmax(self.logits), 1)  # 预测类别
+            self.logits_1=tf.concat([temp[0],temp[1],temp[2],temp[3],temp[4]],axis=1)
+            self.y_pred = tf.argmax(tf.nn.softmax(self.logits_1), 1)  # 预测类别
 
         with tf.name_scope("optimize"):
             # 损失函数，交叉熵
@@ -454,7 +462,7 @@ class TestHierachyCnn(object):
 
         with tf.name_scope("accuracy"):
             # 准确率
-            correct_pred = tf.equal(tf.argmax(self.y, 1), self.y_pred)
+            correct_pred = tf.equal(tf.argmax(self.y_1, 1), self.y_pred)
             self.precision = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 def main():
