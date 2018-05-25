@@ -338,9 +338,34 @@ def cut_data(base_dir):
         for i, iter in enumerate(all_data):
             if i>int(0.85*len(all_data)):
                 f.write(iter+'\n')
-        
+
+def balance_data(base_dir):
+    import random
+    file='felony'
+    file_name=base_dir+file+'_train.txt'
+    contents,labels=read_data(file_name)
+    count=[0,0,0,0,0,0,0,0,0]
+    all_data,balance_data=[],[]
+    for i,iter in enumerate(labels):
+        count[int(iter)-10]+=1
+        all_data.append(contents[i]+','+labels[i])
+    balance=min(count)
+    count=[0,0,0,0,0,0,0,0,0]
+    random.shuffle(all_data)
+    random.shuffle(all_data)
+    random.shuffle(all_data)
+    for _,iter in enumerate(all_data):
+        content,number=iter.split(',')
+        number=int(number)
+        if count[number-10]<balance and len(content)>30:
+            count[number-10]+=1
+            balance_data.append(iter)
+    with open(file=base_dir+file+'_balance.txt',mode='w',encoding='utf8') as f:
+        for i, iter in enumerate(balance_data):
+            f.write(iter+'\n')
+
 def main():
-    cut_data('D:/judgement_prediction/hierachy/murder_hierachy/')
+    balance_data('D:/judgement_prediction/hierachy/murder_hierachy/')
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
     target_case=DealRawData(case_name)
