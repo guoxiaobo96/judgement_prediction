@@ -235,6 +235,19 @@ def read_vocab(vocab_dir):
         word_to_id = dict(zip(words, range(len(words))))
     return words, word_to_id
 
+def read_word2vec(vocab_dir):
+    with open(vocab_dir,mode='r',encoding='utf8') as fp:
+        vocab_length,vocab_dim=0,0
+        words,vectors=[],[]
+        for line in fp.readlines():
+            if vocab_length==0:
+                vocab_length,vocab_dim=line.strip().split(' ')
+            else:
+                words.append(line.strip().split(' ')[0])
+                vectors.append(line.strip().split(' ')[1:])
+        word_to_id = dict(zip(words, vectors))
+    return words, word_to_id, vocab_length,vocab_dim
+
 def batch_iter(x,y, batch_size, shuffle=True):
     """
     Generates a batch iterator for a dataset.
@@ -287,6 +300,36 @@ def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0
     if split==False:
         return x_data,y_data,x_text
     return x_train,y_train,x_val,y_val,x_test,y_test
+
+def get_data_with_vocab(data_dir,words_to_id,vocab_length,train_rate=0.6,test_rate=0.2,split=True):
+    import keras
+    import random
+    contents,labels=read_data(data_dir)
+    data_id, label_id,all_data=[],[],[]
+    for i in range(len(contents)):
+        all_data.append(contents[i]+','+labels[i])
+    data_size=len(all_data)
+    random.shuffle(all_data)
+    contents,labels=[],[]
+    for _,data in enumerate(all_data):
+        content,label=str(data).strip().split(',')
+        contents.append(content)
+        labels.append(label)
+    for i in range(len(contents)):
+        data_id.append([words_to_id[x]for x in contents[i] if x in words_to_id])
+        label_id.append(labels[i])
+    x_data=keras.preprocessing.sequence.pad_sequences(data_id,int(vocab_length),dtype='float32')
+    y_data=keras.utils.to_categorical(label_id)
+    x_train=x_data[:int(train_rate*data_size)]
+    y_train=y_data[:int(train_rate*data_size)]
+    x_val=x_data[int(train_rate*data_size)+1:int((1-test_rate)*data_size)]
+    y_val=y_data[int(train_rate*data_size)+1:int((1-test_rate)*data_size)]
+    x_test=x_data[int((1-test_rate)*data_size)+1:]
+    y_test=y_data[int((1-test_rate)*data_size)+1:]
+    if split==False:
+        return x_data,y_data,all_data
+    return x_train,y_train,x_val,y_val,x_test,y_test
+
 
 def to_words(content,words):
     return ' '.join(words[x] for x in content)
@@ -365,6 +408,8 @@ def balance_data(base_dir):
             f.write(iter+'\n')
 
 def main():
+    read_vocab('D:/criminal_data/vocab/vocab.txt')
+    read_word2vec('D:/criminal_data/vocab/word2vec.txt')
     balance_data('D:/judgement_prediction/hierachy/murder_hierachy/')
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))

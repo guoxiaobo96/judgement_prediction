@@ -4,9 +4,9 @@ import pickle
 
 class TCNNConfig(object):
     """CNN配置参数"""
-
+    vocab_dim=400
     embedding_size = 128  # 词向量维度
-    seq_length = 500  # 序列长度
+    seq_length = 100  # 序列长度
     num_classes = 5  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
@@ -30,7 +30,7 @@ class CharLevelCNN(object):
     def __init__(self, config):
         self.config = config
         # 三个待输入的数据
-        self.x = tf.placeholder(tf.int32, [None, self.config.seq_length], name='x')
+        self.x = tf.placeholder(tf.int32, [None,self.config.embedding_size,self.config.seq_length], name='x')
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.l2_loss=0
@@ -41,13 +41,13 @@ class CharLevelCNN(object):
     def char_level_cnn(self):
         """CNN模型"""
         # 词向量映射
-        with tf.device('/cpu:0'):
-            embedding = tf.get_variable('embedding', [self.config.vocab_size, self.config.embedding_size])
-            embedding_inputs = tf.nn.embedding_lookup(embedding, self.x)
+        #with tf.device('/cpu:0'):
+        #    embedding = tf.get_variable('embedding', [self.config.vocab_size, self.config.embedding_size])
+        #    embedding_inputs = tf.nn.embedding_lookup(embedding, self.x)
 
         with tf.name_scope("cnn"):
             # CNN layer
-            conv = tf.layers.conv1d(embedding_inputs, self.config.num_filters, self.config.kernel_size, name='conv')
+            conv = tf.layers.conv1d(self.x, self.config.num_filters, self.config.kernel_size, name='conv')
             # global max pooling layer
             gmp = tf.reduce_max(conv, reduction_indices=[1], name='gmp')
 

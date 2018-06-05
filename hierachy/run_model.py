@@ -12,15 +12,15 @@ import tensorflow as tf
 from sklearn import metrics
 
 from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestModel,TestCnnConv2,HierachyCnn,TestHierachyCnn
-from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
+from prepareData import read_vocab,batch_iter, get_data, build_vocab,read_catagory,read_word2vec,get_data_with_vocab
 import cnnModel
 
-base_dir = 'criminal'
-data_dir=os.path.join(base_dir,'data.txt')
+base_dir = 'd:/criminal_data'
+data_dir=os.path.join(base_dir,'criminal/data.txt')
 #train_dir = os.path.join(base_dir, 'data_train.txt')
 #test_dir = os.path.join(base_dir, '2.txt')
 #val_dir = os.path.join(base_dir, 'data_valid.txt')
-vocab_dir = os.path.join(base_dir, 'vocab.txt')
+vocab_dir = os.path.join(base_dir, 'vocab/word2vec.txt')
 
 save_dir = 'D:/checkpoints/textcnn'
 save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
@@ -223,9 +223,12 @@ if __name__ == '__main__':
     if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
         build_vocab(data_dir, vocab_dir, config.vocab_size,1)
     categories, cat_to_id = read_catagory()
-    words, word_to_id = read_vocab(vocab_dir)
+    #words, word_to_id = read_vocab(vocab_dir)
+    words,words_to_id,vocab_length,vocab_dim=read_word2vec(vocab_dir)
     config.vocab_size = len(words)
-    x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
+    config.vocab_dim=vocab_dim
+    #x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
+    x_train,y_train,x_val,y_val,x_test,y_test=get_data_with_vocab(data_dir,words_to_id,config.seq_length)
 #    x_train,y_train,_=get_data(train_dir,word_to_id,cat_to_id,config.seq_length,split=False)
 #    x_val,y_val,_=get_data(val_dir,word_to_id,cat_to_id,config.seq_length,split=False)
 #    x_test,y_test,x_text=get_data(test_dir,word_to_id,cat_to_id,config.seq_length,split=False)
