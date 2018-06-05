@@ -15,7 +15,7 @@ from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestModel,TestCnnConv2,
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 import cnnModel
 
-base_dir = 'criminal_year'
+base_dir = 'criminal'
 data_dir=os.path.join(base_dir,'data.txt')
 #train_dir = os.path.join(base_dir, 'data_train.txt')
 #test_dir = os.path.join(base_dir, '2.txt')

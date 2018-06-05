@@ -222,8 +222,8 @@ def build_vocab(train_data,vocab_dir,vocab_size,min_frequence):
         counter = Counter(all_data)
         count_pairs = counter.most_common(vocab_size-1)
         vocab_list=list(zip(*count_pairs))
-        index=vocab_list[1].index(1)
-        words=vocab_list[0][:index]
+        index=vocab_list[1]
+        words=vocab_list[0]
         # 添加一个 <PAD> 来将所有文本pad为同一长度
         words = ['<PAD>'] + list(words)
         with open(vocab_dir,mode='w',encoding='utf8') as f:
