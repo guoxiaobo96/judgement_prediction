@@ -44,7 +44,7 @@ class CharLevelCNN(object):
 
         with tf.name_scope("cnn"):
             # CNN layer
-            conv_1 = tf.layers.conv1d(embedding_inputs, 64, 3, name='conv1',trainable=True,padding='same')
+            conv_1 = tf.layers.conv1d(self.x, 64, 3, name='conv1',trainable=True,padding='same')
             conv_1=tf.nn.relu(conv_1)
             # global max pooling layer
             max_pool_1=tf.layers.max_pooling1d(conv_1,2,strides=1,padding='same')
