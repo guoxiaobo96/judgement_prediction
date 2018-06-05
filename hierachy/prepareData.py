@@ -3,7 +3,7 @@ class DealRawData():
         self.case_name=case_name
         self.data_list=[]
         self.target_filename= 'D:/judgement_prediction/hierachy/'+self.case_name+'/'
-        self.classification_number=41
+        self.classification_number=5
         for _ in range(self.classification_number):
                 self.data_list.append('')
         self.min_frequence=2
@@ -30,8 +30,8 @@ class DealRawData():
         data_death=str()
 
         for _ in range(1, sheet.nrows):
-            content = sheet.cell(_, 13).value
-            position = content.find("本院认为")
+            content = sheet.cell(_, 12).value
+            position = content.find("经审理查明")
             if position>0:
                 content = content[position:]
             position = content.find("中华人民共和国刑法")
@@ -274,10 +274,10 @@ def process_data(file_name, word_to_id, cat_to_id,max_length=600):
     x_pad=keras.preprocessing.sequence.pad_sequences(data_id,max_length)
     y_pad=keras.utils.to_categorical(label_id)
 
-    return x_pad,y_pad,len(all_data)
+    return x_pad,y_pad,len(all_data),all_data
 
 def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0.2,split=True):
-    x_data,y_data,data_size=process_data(data_dir, word_to_id, cat_to_id, seq_length)
+    x_data,y_data,data_size,x_text=process_data(data_dir, word_to_id, cat_to_id, seq_length)
     x_train=x_data[:int(train_rate*data_size)]
     y_train=y_data[:int(train_rate*data_size)]
     x_val=x_data[int(train_rate*data_size)+1:int((1-test_rate)*data_size)]
@@ -285,7 +285,7 @@ def get_data(data_dir,word_to_id,cat_to_id,seq_length,train_rate=0.6,test_rate=0
     x_test=x_data[int((1-test_rate)*data_size)+1:]
     y_test=y_data[int((1-test_rate)*data_size)+1:]
     if split==False:
-        return x_data,y_data
+        return x_data,y_data,x_text
     return x_train,y_train,x_val,y_val,x_test,y_test
 
 def to_words(content,words):

@@ -15,14 +15,14 @@ from cnnModelTest import TCNNConfig,TextCnn,CharLevelCNN,TestModel,TestCnnConv2,
 from prepareData import read_vocab,  batch_iter, get_data, build_vocab,read_catagory
 import cnnModel
 
-base_dir = 'murder_hierachy'
+base_dir = 'criminal_year'
 data_dir=os.path.join(base_dir,'data.txt')
-train_dir = os.path.join(base_dir, 'data_train.txt')
-test_dir = os.path.join(base_dir, 'final_test.txt')
-val_dir = os.path.join(base_dir, 'data_valid.txt')
+#train_dir = os.path.join(base_dir, 'data_train.txt')
+#test_dir = os.path.join(base_dir, '2.txt')
+#val_dir = os.path.join(base_dir, 'data_valid.txt')
 vocab_dir = os.path.join(base_dir, 'vocab.txt')
 
-save_dir = 'D:/checkpoints/textcnn/layer1_72.45'
+save_dir = 'D:/checkpoints/textcnn'
 save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
 train_rate=0.6
 valid_rate=0.2
@@ -94,7 +94,7 @@ def train(x_train,y_train,x_val,y_val):
     total_batch = 0  # 总批次
     best_acc_val = 0.0  # 最佳验证集准确率
     last_improved = 0  # 记录上一次提升批次
-    require_improvement = 3000  # 如果超过1000轮未提升，提前结束训练
+    require_improvement = 3000  # 如果超过3000轮未提升，提前结束训练
 
     flag = False
     for _ in range(config.num_epochs):
@@ -180,6 +180,39 @@ def test(x_test,y_test):
     time_dif = get_time_dif(start_time)
     print("Time usage:", time_dif)
 
+def final_test(x_test,y_test,x_text):
+    print("Loading test data...")
+    session = tf.Session()
+    session.run(tf.global_variables_initializer())
+    saver = tf.train.Saver()
+    saver.restore(sess=session, save_path=save_path)  # 读取保存的模型
+
+#    print('Testing...')
+#    loss_test, acc_test = evaluate(session, x_test, y_test)
+#   msg = 'Test Loss: {0:>6.2}, Test Acc: {1:>7.2%}'
+#    print(msg.format(loss_test, acc_test))
+
+    batch_size = 128
+    data_len = len(x_test)
+    num_batch = int((data_len - 1) / batch_size) + 1
+
+    y_test = np.argmax(y_test, 1)
+    y_pred = np.zeros(shape=len(x_test), dtype=np.int32)  # 保存预测结果
+    for i in range(num_batch):  # 逐批次处理
+        start_id = i * batch_size
+        end_id = min((i + 1) * batch_size, data_len)
+        feed_dict = {
+            model.x: x_test[start_id:end_id],
+            model.keep_prob: 1.0
+        }
+        y_pred[start_id:end_id] = session.run(model.y_pred, feed_dict=feed_dict)
+        count=0
+    for i in range(len(x_test)):
+        if str(y_pred[i])==str(y_test[i]):
+            count+=1
+    print(count)
+#        with open(file=base_dir+'/'+str(y_pred[i])+'.txt',mode='a',encoding='utf8') as f:
+#            f.write(str(x_text[i])+'\n')
 
 if __name__ == '__main__':
 #    if len(sys.argv) != 2 or sys.argv[1] not in ['train', 'test']:
@@ -193,9 +226,13 @@ if __name__ == '__main__':
     words, word_to_id = read_vocab(vocab_dir)
     config.vocab_size = len(words)
     x_train,y_train,x_val,y_val,x_test,y_test=get_data(data_dir,word_to_id,cat_to_id,config.seq_length)
+#    x_train,y_train,_=get_data(train_dir,word_to_id,cat_to_id,config.seq_length,split=False)
+#    x_val,y_val,_=get_data(val_dir,word_to_id,cat_to_id,config.seq_length,split=False)
+#    x_test,y_test,x_text=get_data(test_dir,word_to_id,cat_to_id,config.seq_length,split=False)
     model = cnnModel.CharLevelCNN(config)
 #    if sys.argv[1] == 'train':
-    #model =TestModel(config,128,2,256,5)
-    #train(x_train,y_train,x_val,y_val)
+    #model =cnnModel.(config,128,2,256,5)
+    train(x_train,y_train,x_val,y_val)
 #    else:
-    #test(x_test,y_test)
+    test(x_test,y_test)
+#    final_test(x_test,y_test,x_text)
