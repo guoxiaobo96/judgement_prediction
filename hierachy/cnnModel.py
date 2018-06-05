@@ -30,7 +30,7 @@ class CharLevelCNN(object):
     def __init__(self, config):
         self.config = config
         # 三个待输入的数据
-        self.x = tf.placeholder(tf.int32, [None,self.config.embedding_size,self.config.seq_length], name='x')
+        self.x = tf.placeholder(tf.int32, [None, self.config.seq_length], name='x')
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.l2_loss=0
@@ -41,9 +41,9 @@ class CharLevelCNN(object):
     def char_level_cnn(self):
         """CNN模型"""
         # 词向量映射
-        #with tf.device('/cpu:0'):
-        #    embedding = tf.get_variable('embedding', [self.config.vocab_size, self.config.embedding_size])
-        #    embedding_inputs = tf.nn.embedding_lookup(embedding, self.x)
+        with tf.device('/cpu:0'):
+            embedding = tf.get_variable('embedding', [self.config.vocab_size, self.config.embedding_size])
+            embedding_inputs = tf.nn.embedding_lookup(embedding, self.x)
 
         with tf.name_scope("cnn"):
             # CNN layer
