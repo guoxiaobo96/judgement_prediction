@@ -34,7 +34,7 @@ class CharLevelCNN(object):
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.l2_loss=0
-        self.l2_lambda=0.1
+        self.l2_lambda=0.2
 
         self.char_level_cnn()
 
