@@ -20,7 +20,7 @@ data_dir=os.path.join(base_dir,'criminal/data.txt')
 #train_dir = os.path.join(base_dir, 'data_train.txt')
 #test_dir = os.path.join(base_dir, '2.txt')
 #val_dir = os.path.join(base_dir, 'data_valid.txt')
-vocab_dir = os.path.join(base_dir, 'vocab/word2vec.txt')
+vocab_dir = os.path.join(base_dir, 'vocab/data_model.txt')
 
 save_dir = 'D:/checkpoints/textcnn'
 save_path = os.path.join(save_dir, 'best_validation')  # 最佳验证结果保存路径
@@ -219,7 +219,7 @@ if __name__ == '__main__':
 #        raise ValueError("""usage: python run_cnn.py [train / test]""")
 
     print('Configuring CNN model...')
-    config = cnnModel.TCNNConfig()
+    config = TCNNConfig()
     if not os.path.exists(vocab_dir):  # 如果不存在词汇表，重建
         build_vocab(data_dir, vocab_dir, config.vocab_size,1)
     categories, cat_to_id = read_catagory()
@@ -232,7 +232,7 @@ if __name__ == '__main__':
 #    x_train,y_train,_=get_data(train_dir,word_to_id,cat_to_id,config.seq_length,split=False)
 #    x_val,y_val,_=get_data(val_dir,word_to_id,cat_to_id,config.seq_length,split=False)
 #    x_test,y_test,x_text=get_data(test_dir,word_to_id,cat_to_id,config.seq_length,split=False)
-    model = cnnModel.CharLevelCNN(config)
+    model = CharLevelCNN(config)
 #    if sys.argv[1] == 'train':
     #model =cnnModel.(config,128,2,256,5)
     train(x_train,y_train,x_val,y_val)

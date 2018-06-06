@@ -6,8 +6,8 @@ class TCNNConfig(object):
     """CNN配置参数"""
     vocab_dim=400
     embedding_size = 128  # 词向量维度
-    seq_length = 500  # 序列长度
-    num_classes = 10  # 类别数
+    seq_length = 400  # 序列长度
+    num_classes = 5  # 类别数
     num_filters = 256  # 卷积核数目
     filter_size = [2,3,4,5]  # 卷积核尺寸
     vocab_size = 5000  # 词汇表大小
@@ -30,7 +30,7 @@ class CharLevelCNN(object):
     def __init__(self, config):
         self.config = config
         # 三个待输入的数据
-        self.x = tf.placeholder(tf.int32, [None,self.config.vocab_dim ,self.config.seq_length], name='x')
+        self.x = tf.placeholder(tf.float32, [None,self.config.seq_length,self.config.vocab_dim], name='x')
         self.y = tf.placeholder(tf.float32, [None, self.config.num_classes], name='y')
         self.keep_prob = tf.placeholder(tf.float32, name='keep_prob')
         self.l2_loss=0
@@ -464,7 +464,7 @@ class TestHierachyCnn(object):
 
 def main():
     config=TCNNConfig()
-    model=TestModel(config,128,2,256,5)
+    model=CharLevelCNN(config)
 
 if __name__=='__main__':
     main()

@@ -2,7 +2,7 @@ class DealRawData():
     def __init__(self,case_name):
         self.case_name=case_name
         self.data_list=[]
-        self.target_filename= 'D:/judgement_prediction/hierachy/'+self.case_name+'/'
+        self.target_filename= 'D:/criminal_data/'+self.case_name+'/'
         self.classification_number=5
         for _ in range(self.classification_number):
                 self.data_list.append('')
@@ -40,7 +40,7 @@ class DealRawData():
             content = sheet.cell(_, 7).value+" "+sheet.cell(_, 8).value+" "+sheet.cell(_, 11).value[0:4]+" "+content
             content = content.replace('\n', '')
             temp_label = sheet.cell(_, 14).value+''
-            delete_list = ['、', '：', '。', '，', '“', '”', '《', '》', '＜', '＞',
+            delete_list = ['、', '：', '，', '“', '”', '《', '》', '＜', '＞',
                 '（', '）', '[', ']', '【', '】', '*', '-', '；', ',']
             for i in range(len(delete_list)):
                 content = content.replace(delete_list[i], '')
@@ -408,9 +408,9 @@ def balance_data(base_dir):
             f.write(iter+'\n')
 
 def main():
-    read_vocab('D:/criminal_data/vocab/vocab.txt')
-    read_word2vec('D:/criminal_data/vocab/word2vec.txt')
-    balance_data('D:/judgement_prediction/hierachy/murder_hierachy/')
+    #read_vocab('D:/criminal_data/vocab/vocab.txt')
+    #read_word2vec('D:/criminal_data/vocab/word2vec.txt')
+    #balance_data('D:/judgement_prediction/hierachy/murder_hierachy/')
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
     target_case=DealRawData(case_name)
