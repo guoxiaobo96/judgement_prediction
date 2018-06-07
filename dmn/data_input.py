@@ -61,7 +61,10 @@ def process_data(raw_data, word_to_id, train_rate=0.6, test_rate=0.2, split=True
 
 
 def main():
-    get_data_raw('D:/criminal_data/criminal/data.txt')
+    raw_data = get_data_raw('D:/criminal_data/criminal/data.txt')
+    words, word_to_id = read_vocab('d:/criminal_data/criminal/vocab.txt')
+    x_train, y_train, x_val, y_val, x_test, y_test = process_data(
+        raw_data, word_to_id)
 
 
 if __name__ == '__main__':
