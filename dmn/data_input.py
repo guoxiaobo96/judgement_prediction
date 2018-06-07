@@ -34,19 +34,18 @@ def process_data(raw_data, word_to_id, train_rate=0.6, test_rate=0.2, split=True
         if len(content[0]) > document_len:
             document_len = len(content[0])
         for _, sentence in enumerate(content[0]):
-            if len(content[0]) > sentence_len:
-                sentence = len(content[0])
-            sentence_id = []
-            sentence_id.append([word_to_id[x]
-                                for x in sentence if x in word_to_id])
+            if len(sentence) > sentence_len:
+                sentence_len = len(sentence)
+            sentence_id=[word_to_id[x]
+                                for _, x in enumerate(sentence) if x in word_to_id]
             document_id.append(sentence_id)
         content_id.append(document_id)
 
     for _, document in enumerate(content_id):
         document_pad.append(
-            keras.preprocessing.sequence.pad_sequences(document, sentence_len))
+            keras.preprocessing.sequence.pad_sequences(document, 100))
     x_data = keras.preprocessing.sequence.pad_sequences(
-        document_pad, document_len)
+        document_pad, 50)
     y_data = keras.utils.to_categorical(label_id)
     data_size = len(x_data)
     x_train = x_data[:int(train_rate*data_size)]

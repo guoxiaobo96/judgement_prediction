@@ -9,7 +9,7 @@ class DealRawData():
         self.min_frequence=2
         
 
-    def xls2txt(self,data_type,char_split=False):
+    def xls2txt(self,data_type,char_split=True):
         import jieba
         import xlrd
         """this part is used to change the date from xls version to txt version
