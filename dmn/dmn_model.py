@@ -37,9 +37,6 @@ class Config():
 
     floatX = np.float32
 
-    babi_id = "1"
-    babi_test_id = ""
-
     train_mode = True
 
 
@@ -64,7 +61,8 @@ def _position_encoding(sentence_size, embedding_size):
     embedding_len = embedding_size+1
     for i in range(1, embedding_len):
         for j in range(1, sentence_len):
-            encoding[i-1, j-1] = (i - (embedding_len-1)/2) * (j - (sentence_len-1)/2)
+            encoding[i-1, j-1] = (i - (embedding_len-1)/2) * \
+                (j - (sentence_len-1)/2)
     encoding = 1 + 4 * encoding / embedding_size / sentence_size
     return np.transpose(encoding)
 
@@ -86,18 +84,20 @@ class DmnModel():
         self.merged = tf.summary.merge_all()
 
     def load_data(self):
-        if self.config.train_mode:
-            self.train, self.valid, self.word_embedding, self.max_q_len, self.max_sentences, self.max_sen_len, self.vocab_size = data_input.load_data(
-                self.config, split_sentences=True)
-        else:
-            self.test, self.word_embedding, self.max_q_len, self.max_sentences, self.max_sen_len, self.vocab_size = data_input.load_data(
-                self.config, split_sentences=True)
+        self.x_train, self.y_train, self.x_valid, self.y_valid, self.x_test, self.y_test, self.question, self.word_embedding, self.max_q_len, self.max_sentences, self.max_sen_len, self.vocab_size, self.question_num = data_input.load_data(
+            self.config)
         self.encoding = _position_encoding(
             self.max_sen_len, self.config.embed_size)
+        self.train = zip(self.question, self.x_train,
+                         self.max_q_len, self.max_sentences, self.y_train)
+        self.valid = zip(self.question, self.x_valid,
+                         self.max_q_len, self.max_sentences, self.y_valid)
+        self.test = zip(self.question, self.x_test,
+                        self.max_q_len, self.max_sentences, self.y_test)
 
     def add_placeholders(self):
         self.question_placeholder = tf.placeholder(
-            tf.int32, shape=(self.config.batch_size, self.max_q_len))
+            tf.int32, shape=(self.config.batch_size, self.max_q_len, self.question_num))
         self.input_placeholder = tf.placeholder(tf.int32, shape=(
             self.config.batch_size, self.max_sentences, self.max_sen_len))
 
@@ -222,7 +222,7 @@ class DmnModel():
 
         return out_put
 
-    def run_epoch(self, session, data, num_epoch, train_writer=None, train_op=None, verbose=2):
+    def run_epoch(self, session, data, num_epoch=0, train_writer=None, train_op=None, verbose=2):
         config = self.config
         drop_out = config.drop_out
         if train_op is None:
