@@ -74,8 +74,11 @@ class DmnModel():
         self.load_data()
         self.add_placeholders()
 
-        self.embeddings = tf.Variable(
-            self.word_embedding.astype(np.float32), name="embedding")
+        if self.word_embedding!=[]:
+            self.embeddings = tf.Variable(
+                self.word_embedding.astype(np.float32), name="embedding")
+        else:
+            self.embeddings=tf.get_variable(name='embedding',shape=[self.vocab_size,self.config.embedding_size],trainable=True)
 
         self.output = self.inference()
         self.pred = self.get_predictions(self.output)
