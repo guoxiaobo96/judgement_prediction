@@ -4,6 +4,7 @@ import tensorflow as tf
 from dmn_model import Config
 from dmn_model import DmnModel
 
+
 NUM_RUNS = 1
 CONFIG_TRAIN = Config()
 BEST_LOSS = float('inf')
@@ -18,6 +19,8 @@ for run in range(NUM_RUNS):
     saver = tf.train.Saver()
 
     with tf.Session() as session:
+        if Config.debug:
+            session=tf.python.debug.LocalCLIDebugWrapperSession(session)
 
         sum_dir = 'summaries/train/' + time.strftime("%Y-%m-%d %H %M")
         if not os.path.exists(sum_dir):
@@ -39,7 +42,6 @@ for run in range(NUM_RUNS):
         for epoch in range(CONFIG_TRAIN.max_epoch):
             print('Epoch {}'.format(epoch))
             start = time.time()
-
             train_loss, train_accuracy = MODEL.run_epoch(
                 session, MODEL.train, epoch, train_writer,
                 train_op=MODEL.train_step)
