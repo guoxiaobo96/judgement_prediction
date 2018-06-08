@@ -11,7 +11,7 @@ def get_data_raw(file_name):
                 continue
             content, label = line.strip().split(',')
             if content:
-                data.append([content, label])
+                data.append([content.split('。'), label])
     return data
 
 
