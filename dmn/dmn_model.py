@@ -10,7 +10,7 @@ class Config():
     batch_size = 64
     embedding_size = 80
     hidden_size = 80
-
+    class_num=5
     max_epoch = 256
     early_stopping = 20
 
@@ -87,17 +87,17 @@ class DmnModel():
         self.x_train, self.y_train, self.x_valid, self.y_valid, self.x_test, self.y_test, self.question, self.word_embedding, self.max_q_len, self.max_sentences, self.max_sen_len, self.vocab_size, self.question_num = data_input.load_data(
             self.config)
         self.encoding = _position_encoding(
-            self.max_sen_len, self.config.embed_size)
+            self.max_sen_len, self.config.embedding_size)
         self.train = zip(self.question, self.x_train,
-                         self.max_q_len, self.max_sentences, self.y_train)
+                         self.y_train)
         self.valid = zip(self.question, self.x_valid,
-                         self.max_q_len, self.max_sentences, self.y_valid)
+                         self.y_valid)
         self.test = zip(self.question, self.x_test,
-                        self.max_q_len, self.max_sentences, self.y_test)
+                        self.y_test)
 
     def add_placeholders(self):
         self.question_placeholder = tf.placeholder(
-            tf.int32, shape=(self.config.batch_size, self.max_q_len, self.question_num))
+            tf.int32, shape=(self.config.batch_size, self.max_q_len))
         self.input_placeholder = tf.placeholder(tf.int32, shape=(
             self.config.batch_size, self.max_sentences, self.max_sen_len))
 
@@ -140,7 +140,7 @@ class DmnModel():
     def get_question_representation(self):
         questions = tf.nn.embedding_lookup(
             self.embeddings, self.question_placeholder)
-        gru_cell = tf.contrib.rnn.gru_cell(self.config.hidden_size)
+        gru_cell = tf.contrib.rnn.GRUCell(self.config.hidden_size)
         _, question_vec = tf.nn.dynamic_rnn(
             gru_cell, questions, dtype=np.float32, sequence_length=self.question_len_placeholder)
         return question_vec
@@ -232,16 +232,16 @@ class DmnModel():
         total_loss = []
         accuracy = 0
         partition = np.random.permutation(len(data[0]))
-        question_place, input_place, question_len, input_len, answer_place = data
-        question_place, input_place, question_len, input_len, answer_place = question_place[
-            partition], input_place[partition], question_len[partition], input_len[partition], answer_place[partition]
+        question_place, input_place, answer_place = data
+        question_place, input_place,  answer_place = question_place[
+            partition], input_place[partition],  answer_place[partition]
 
         for step in range(total_steps):
             index = range(step*config.batch_size, (step+1)*config.batch_size)
             feed = {self.question_placeholder: question_place[index],
                     self.input_placeholder: input_place[index],
-                    self.question_len_placeholder: question_len[index],
-                    self.input_len_placeholder: input_len[index],
+                    self.question_len_placeholder: self.max_q_len,
+                    self.input_len_placeholder: self.max_sentences, 
                     self.answer_placeholder: answer_place[index],
                     self.dropout_placeholder: drop_out}
             loss, pred, summary, _ = session.run(

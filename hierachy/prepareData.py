@@ -30,8 +30,8 @@ class DealRawData():
         data_death=str()
 
         for _ in range(1, sheet.nrows):
-            content = sheet.cell(_, 12).value
-            position = content.find("经审理查明")
+            content = sheet.cell(_, 13).value
+            position = content.find("本院认为")
             if position>0:
                 content = content[position:]
             position = content.find("中华人民共和国刑法")
@@ -411,10 +411,11 @@ def main():
     #read_vocab('D:/criminal_data/vocab/vocab.txt')
     #read_word2vec('D:/criminal_data/vocab/word2vec.txt')
     #balance_data('D:/judgement_prediction/hierachy/murder_hierachy/')
+    build_vocab('D:/criminal_data/criminal/data.txt','D:/criminal_data/criminal/vocab.txt',vocab_size=3000,min_frequence=0)
     case_name=input('please input case name:')
     data_type=int(input('please input data_type:'))
     target_case=DealRawData(case_name)
-    target_case.xls2txt(data_type=data_type)
+    target_case.xls2txt(data_type=data_type, char_split=False)
 
 if __name__=='__main__':
     main()
