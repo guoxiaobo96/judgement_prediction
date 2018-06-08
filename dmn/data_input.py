@@ -78,7 +78,7 @@ def load_data(config):
         'D:/criminal_data/criminal/question.txt', word_to_id)
     if not config.word2vec_init:
         word_embedding = np.random.uniform(-config.embedding_init,
-                                           config.embedding_init, (0, config.embedding_size))
+                                           config.embedding_init, (len(words), config.embedding_size))
     return x_train, y_train, x_val, y_val, x_test, y_test, questions, word_embedding, question_len, document_len, sentence_len, len(words), len(questions)
 
 if __name__=='__main__':
