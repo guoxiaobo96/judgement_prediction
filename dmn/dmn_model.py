@@ -7,6 +7,7 @@ import data_input
 
 
 class Config():
+    debug=True
     batch_size = 64
     embedding_size = 80
     hidden_size = 80
